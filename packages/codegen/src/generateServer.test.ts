@@ -48,4 +48,13 @@ describe("generateServer", () => {
     const parsed = JSON.parse(pkg!.contents);
     expect(parsed.dependencies["@modelcontextprotocol/sdk"]).toBeDefined();
   });
+
+  it("registers tools with a Zod raw shape inputSchema, not raw JSON Schema", () => {
+    const files = generateServer(project);
+    const index = files.find((f) => f.path === "index.ts");
+    expect(index).toBeDefined();
+    expect(index!.contents).toContain("jsonSchemaToZodShape(");
+    expect(index!.contents).not.toContain('inputSchema: {"type":"object"');
+    expect(index!.contents).toContain('import { z } from "zod";');
+  });
 });

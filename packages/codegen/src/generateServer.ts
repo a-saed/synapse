@@ -19,7 +19,7 @@ server.registerTool(
   ${JSON.stringify(node.name)},
   {
     description: ${JSON.stringify(node.description)},
-    inputSchema: ${JSON.stringify(node.inputSchema)},
+    inputSchema: jsonSchemaToZodShape(${JSON.stringify(node.inputSchema)}),
   },
   async (input) => {
     const result = await (async () => {
@@ -30,6 +30,27 @@ ${node.logic.code}
 );`;
 }
 
+const jsonSchemaToZodShapeHelper = `
+function jsonSchemaToZodShape(schema) {
+  const required = new Set(schema.required ?? []);
+  const shape = {};
+  for (const [key, prop] of Object.entries(schema.properties ?? {})) {
+    let zodType;
+    switch (prop.type) {
+      case "string": zodType = z.string(); break;
+      case "number": zodType = z.number(); break;
+      case "boolean": zodType = z.boolean(); break;
+      case "object": zodType = z.object({}).passthrough(); break;
+      case "array": zodType = z.array(z.any()); break;
+      default: zodType = z.any();
+    }
+    if (prop.description) zodType = zodType.describe(prop.description);
+    shape[key] = required.has(key) ? zodType : zodType.optional();
+  }
+  return shape;
+}
+`.trim();
+
 export function generateServer(project: SynapseProject): GeneratedFile[] {
   const tools = exposedNodes(project).filter(
     (n): n is ToolNode => n.kind === "tool"
@@ -38,6 +59,9 @@ export function generateServer(project: SynapseProject): GeneratedFile[] {
   const indexTs = `
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+${jsonSchemaToZodShapeHelper}
 
 const server = new McpServer({ name: ${JSON.stringify(project.name)}, version: "1.0.0" });
 ${tools.map(generateToolRegistration).join("\n")}
