@@ -6,5 +6,8 @@
   "scripts": { "test": "vitest run" },
   "dependencies": {
     "@synapse/config-schema": "*"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
   }
 }
