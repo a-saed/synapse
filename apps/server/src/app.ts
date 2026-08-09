@@ -6,6 +6,7 @@ import express, {
 } from "express";
 import { synapseProjectSchema } from "@synapse/config-schema";
 import type { ProjectStorage } from "./storage.js";
+import { runCode } from "./sandbox/run.js";
 
 type AsyncHandler = (req: Request, res: Response) => Promise<unknown>;
 
@@ -78,6 +79,21 @@ export function createApp({ storage }: { storage: ProjectStorage }): Express {
       }
       await storage.save(parsed.data);
       res.json(parsed.data);
+    })
+  );
+
+  app.post(
+    "/projects/:projectId/nodes/:nodeId/execute",
+    asyncHandler(async (req, res) => {
+      const project = await storage.load(req.params.projectId);
+      if (!project)
+        return res.status(404).json({ error: "project not found" });
+
+      const node = project.nodes.find((n) => n.id === req.params.nodeId);
+      if (!node) return res.status(404).json({ error: "node not found" });
+
+      const result = await runCode(node.logic.code, req.body.input);
+      res.json(result);
     })
   );
 

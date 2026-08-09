@@ -126,4 +126,51 @@ describe("server", () => {
       });
     expect(res.status).toBe(400);
   });
+
+  it("executes a tool node's code and returns the result", async () => {
+    const project = {
+      id: "proj-1",
+      name: "P",
+      nodes: [
+        {
+          id: "tool-1",
+          kind: "tool",
+          name: "greet",
+          description: "Greets someone",
+          inputSchema: {
+            type: "object",
+            properties: { name: { type: "string" } },
+            required: ["name"],
+          },
+          logic: { type: "code", code: 'return "hello " + input.name;' },
+        },
+      ],
+      groups: [],
+      exposedGroupIds: [],
+    };
+    await request(app).post("/projects").send({ id: "proj-1", name: "P" });
+    await request(app).put("/projects/proj-1").send(project);
+
+    const res = await request(app)
+      .post("/projects/proj-1/nodes/tool-1/execute")
+      .send({ input: { name: "world" } });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ ok: true, result: "hello world" });
+  });
+
+  it("returns 404 when executing a node on a missing project", async () => {
+    const res = await request(app)
+      .post("/projects/missing/nodes/tool-1/execute")
+      .send({ input: {} });
+    expect(res.status).toBe(404);
+  });
+
+  it("returns 404 when executing a missing node", async () => {
+    await request(app).post("/projects").send({ id: "proj-1", name: "P" });
+    const res = await request(app)
+      .post("/projects/proj-1/nodes/missing/execute")
+      .send({ input: {} });
+    expect(res.status).toBe(404);
+  });
 });
