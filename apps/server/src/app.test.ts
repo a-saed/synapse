@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
+import AdmZip from "adm-zip";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -194,5 +195,36 @@ describe("server", () => {
     expect(res.status).toBe(200);
     expect(res.headers["content-type"]).toContain("application/zip");
     expect(res.body.length).toBeGreaterThan(0);
+
+    // Entries are nested under the project id so that extracting the archive
+    // produces exactly the path the config snippet references.
+    const entries = new AdmZip(res.body)
+      .getEntries()
+      .map((e) => e.entryName)
+      .sort();
+    expect(entries).toEqual([
+      "proj-1/README.md",
+      "proj-1/index.ts",
+      "proj-1/package.json",
+    ]);
+
+    const snippetRes = await request(app).get("/projects/proj-1/export/snippet");
+    const snippetPath = snippetRes.body.mcpServers["proj-1"].args[1];
+    expect(entries).toContain(snippetPath);
+  });
+
+  it("deletes a project", async () => {
+    await request(app).post("/projects").send({ id: "proj-1", name: "P" });
+    expect((await request(app).get("/projects/proj-1")).status).toBe(200);
+
+    const delRes = await request(app).delete("/projects/proj-1");
+    expect(delRes.status).toBe(204);
+
+    expect((await request(app).get("/projects/proj-1")).status).toBe(404);
+  });
+
+  it("returns 404 when deleting a project that does not exist", async () => {
+    const res = await request(app).delete("/projects/does-not-exist");
+    expect(res.status).toBe(404);
   });
 });

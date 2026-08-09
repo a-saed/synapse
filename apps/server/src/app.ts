@@ -84,6 +84,20 @@ export function createApp({ storage }: { storage: ProjectStorage }): Express {
     })
   );
 
+  app.delete(
+    "/projects/:id",
+    asyncHandler(async (req, res) => {
+      // Check-then-delete, matching GET/PUT's "does it exist" handling, so
+      // deleting a project that was never there is a 404 rather than a
+      // silent success (ProjectStorage.delete is force:true / idempotent).
+      const project = await storage.load(req.params.id);
+      if (!project)
+        return res.status(404).json({ error: "project not found" });
+      await storage.delete(req.params.id);
+      res.status(204).end();
+    })
+  );
+
   app.post(
     "/projects/:projectId/nodes/:nodeId/execute",
     asyncHandler(async (req, res) => {
@@ -117,7 +131,9 @@ export function createApp({ storage }: { storage: ProjectStorage }): Express {
       if (!project)
         return res.status(404).json({ error: "project not found" });
       const files = generateServer(project);
-      const buffer = await createZipBuffer(files);
+      // Nest under the project id so the extracted tree matches the path the
+      // config snippet emits (`./<project.id>/index.ts`).
+      const buffer = await createZipBuffer(files, project.id);
       res.type("application/zip").attachment(`${project.id}.zip`).send(buffer);
     })
   );
