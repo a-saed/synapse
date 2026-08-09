@@ -5,8 +5,10 @@ import express, {
   type Response,
 } from "express";
 import { synapseProjectSchema } from "@synapse/config-schema";
+import { generateServer } from "@synapse/codegen";
 import type { ProjectStorage } from "./storage.js";
 import { runCode } from "./sandbox/run.js";
+import { createZipBuffer, generateClaudeConfigSnippet } from "./export.js";
 
 type AsyncHandler = (req: Request, res: Response) => Promise<unknown>;
 
@@ -94,6 +96,29 @@ export function createApp({ storage }: { storage: ProjectStorage }): Express {
 
       const result = await runCode(node.logic.code, req.body.input);
       res.json(result);
+    })
+  );
+
+  app.get(
+    "/projects/:id/export/snippet",
+    asyncHandler(async (req, res) => {
+      const project = await storage.load(req.params.id);
+      if (!project)
+        return res.status(404).json({ error: "project not found" });
+      const snippet = generateClaudeConfigSnippet(project, `./${project.id}`);
+      res.type("application/json").send(snippet);
+    })
+  );
+
+  app.get(
+    "/projects/:id/export/archive",
+    asyncHandler(async (req, res) => {
+      const project = await storage.load(req.params.id);
+      if (!project)
+        return res.status(404).json({ error: "project not found" });
+      const files = generateServer(project);
+      const buffer = await createZipBuffer(files);
+      res.type("application/zip").attachment(`${project.id}.zip`).send(buffer);
     })
   );
 

@@ -7,13 +7,18 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@synapse/codegen": "*",
     "@synapse/config-schema": "*",
+    "archiver": "^7.0.1",
     "express": "^4.21.0"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.5.7",
+    "@types/archiver": "^6.0.2",
     "@types/express": "^4.17.21",
     "@types/node": "^22.7.0",
     "@types/supertest": "^6.0.2",
+    "adm-zip": "^0.5.16",
     "supertest": "^7.0.0",
     "tsx": "^4.19.0"
   }

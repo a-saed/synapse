@@ -173,4 +173,26 @@ describe("server", () => {
       .send({ input: {} });
     expect(res.status).toBe(404);
   });
+
+  it("returns a Claude config snippet for a project", async () => {
+    await request(app).post("/projects").send({ id: "proj-1", name: "P" });
+    const res = await request(app).get("/projects/proj-1/export/snippet");
+    expect(res.status).toBe(200);
+    expect(res.body.mcpServers["proj-1"].command).toBe("npx");
+  });
+
+  it("returns a zip archive for a project", async () => {
+    await request(app).post("/projects").send({ id: "proj-1", name: "P" });
+    const res = await request(app)
+      .get("/projects/proj-1/export/archive")
+      .buffer(true)
+      .parse((res, callback) => {
+        const chunks: Buffer[] = [];
+        res.on("data", (chunk: Buffer) => chunks.push(chunk));
+        res.on("end", () => callback(null, Buffer.concat(chunks)));
+      });
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toContain("application/zip");
+    expect(res.body.length).toBeGreaterThan(0);
+  });
 });
