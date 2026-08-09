@@ -53,6 +53,16 @@ describe("generateServer", () => {
     expect(parsed.dependencies["@modelcontextprotocol/sdk"]).toBeDefined();
   });
 
+  it("generates a README documenting how to install and run the server", () => {
+    const files = generateServer(project);
+    const readme = files.find((f) => f.path === "README.md");
+    expect(readme).toBeDefined();
+    expect(readme!.contents).toContain("greet-server");
+    expect(readme!.contents).toContain("npm install");
+    expect(readme!.contents).toContain("tsx");
+    expect(readme!.contents).toContain("mcpServers");
+  });
+
   it("registers tools with a Zod raw shape inputSchema, not raw JSON Schema", () => {
     const files = generateServer(project);
     const index = files.find((f) => f.path === "index.ts");
