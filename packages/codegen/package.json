@@ -1,0 +1,10 @@
+{
+  "name": "@synapse/codegen",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": { "test": "vitest run" },
+  "dependencies": {
+    "@synapse/config-schema": "*"
+  }
+}
