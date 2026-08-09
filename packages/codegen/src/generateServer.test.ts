@@ -58,3 +58,47 @@ describe("generateServer", () => {
     expect(index!.contents).toContain('import { z } from "zod";');
   });
 });
+
+const projectWithAllKinds: SynapseProject = {
+  ...project,
+  nodes: [
+    ...project.nodes,
+    {
+      id: "resource-1",
+      kind: "resource",
+      name: "readme",
+      uri: "synapse://readme",
+      description: "Project readme",
+      logic: { type: "code", code: 'return "readme contents";' },
+    },
+    {
+      id: "prompt-1",
+      kind: "prompt",
+      name: "summarize",
+      description: "Summarize something",
+      arguments: [
+        { name: "topic", description: "What to summarize", required: true },
+      ],
+      logic: { type: "code", code: 'return "Summarize: " + input.topic;' },
+    },
+  ],
+  groups: [{ id: "g1", name: "default", nodeIds: ["tool-1", "resource-1", "prompt-1"] }],
+};
+
+describe("generateServer with resources and prompts", () => {
+  it("registers exposed resource nodes", () => {
+    const files = generateServer(projectWithAllKinds);
+    const index = files.find((f) => f.path === "index.ts")!;
+    expect(index.contents).toContain("server.registerResource(");
+    expect(index.contents).toContain('"readme"');
+    expect(index.contents).toContain("synapse://readme");
+  });
+
+  it("registers exposed prompt nodes with their arguments", () => {
+    const files = generateServer(projectWithAllKinds);
+    const index = files.find((f) => f.path === "index.ts")!;
+    expect(index.contents).toContain("server.registerPrompt(");
+    expect(index.contents).toContain('"summarize"');
+    expect(index.contents).toContain("topic: z.string()");
+  });
+});

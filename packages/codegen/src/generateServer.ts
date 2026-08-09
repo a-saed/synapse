@@ -1,4 +1,10 @@
-import type { SynapseNode, SynapseProject, ToolNode } from "@synapse/config-schema";
+import type {
+  PromptNode,
+  ResourceNode,
+  SynapseNode,
+  SynapseProject,
+  ToolNode,
+} from "@synapse/config-schema";
 
 export interface GeneratedFile {
   path: string;
@@ -30,6 +36,47 @@ ${node.logic.code}
 );`;
 }
 
+function generateResourceRegistration(node: ResourceNode): string {
+  return `
+server.registerResource(
+  ${JSON.stringify(node.name)},
+  ${JSON.stringify(node.uri)},
+  { description: ${JSON.stringify(node.description)} },
+  async (uri) => {
+    const result = await (async () => {
+${node.logic.code}
+    })();
+    return { contents: [{ uri: uri.href, text: result }] };
+  }
+);`;
+}
+
+function generatePromptRegistration(node: PromptNode): string {
+  const argsSchemaSrc = `{ ${node.arguments
+    .map(
+      (a) =>
+        `${a.name}: z.string()${a.required ? "" : ".optional()"}.describe(${JSON.stringify(
+          a.description
+        )})`
+    )
+    .join(", ")} }`;
+
+  return `
+server.registerPrompt(
+  ${JSON.stringify(node.name)},
+  {
+    description: ${JSON.stringify(node.description)},
+    argsSchema: ${argsSchemaSrc},
+  },
+  async (input) => {
+    const result = await (async () => {
+${node.logic.code}
+    })();
+    return { messages: [{ role: "user", content: { type: "text", text: result } }] };
+  }
+);`;
+}
+
 const jsonSchemaToZodShapeHelper = `
 function jsonSchemaToZodShape(schema) {
   const required = new Set(schema.required ?? []);
@@ -52,9 +99,10 @@ function jsonSchemaToZodShape(schema) {
 `.trim();
 
 export function generateServer(project: SynapseProject): GeneratedFile[] {
-  const tools = exposedNodes(project).filter(
-    (n): n is ToolNode => n.kind === "tool"
-  );
+  const nodes = exposedNodes(project);
+  const tools = nodes.filter((n): n is ToolNode => n.kind === "tool");
+  const resources = nodes.filter((n): n is ResourceNode => n.kind === "resource");
+  const prompts = nodes.filter((n): n is PromptNode => n.kind === "prompt");
 
   const indexTs = `
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -65,6 +113,8 @@ ${jsonSchemaToZodShapeHelper}
 
 const server = new McpServer({ name: ${JSON.stringify(project.name)}, version: "1.0.0" });
 ${tools.map(generateToolRegistration).join("\n")}
+${resources.map(generateResourceRegistration).join("\n")}
+${prompts.map(generatePromptRegistration).join("\n")}
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
