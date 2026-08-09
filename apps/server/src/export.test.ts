@@ -14,6 +14,24 @@ describe("createZipBuffer", () => {
     expect(entries.sort()).toEqual(["index.ts", "package.json"]);
     expect(zip.readAsText("index.ts")).toBe("console.log('hi');");
   });
+
+  it("nests entries under the given root directory", async () => {
+    const buffer = await createZipBuffer(
+      [
+        { path: "index.ts", contents: "console.log('hi');" },
+        { path: "package.json", contents: "{}" },
+      ],
+      "greet-server"
+    );
+    const zip = new AdmZip(buffer);
+    const entries = zip.getEntries().map((e) => e.entryName);
+    expect(entries.sort()).toEqual([
+      "greet-server/index.ts",
+      "greet-server/package.json",
+    ]);
+    // The nested path is what the Claude config snippet points at.
+    expect(zip.readAsText("greet-server/index.ts")).toBe("console.log('hi');");
+  });
 });
 
 describe("generateClaudeConfigSnippet", () => {
