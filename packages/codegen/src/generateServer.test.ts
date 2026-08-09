@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import type { SynapseProject } from "@synapse/config-schema";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import type { PromptArgument, SynapseProject } from "@synapse/config-schema";
 import { generateServer } from "./generateServer.js";
 
 const project: SynapseProject = {
@@ -99,6 +103,73 @@ describe("generateServer with resources and prompts", () => {
     const index = files.find((f) => f.path === "index.ts")!;
     expect(index.contents).toContain("server.registerPrompt(");
     expect(index.contents).toContain('"summarize"');
-    expect(index.contents).toContain("topic: z.string()");
+    // The argument name is an object-literal key, so it must be emitted as a
+    // quoted string literal — valid identifiers get quoted too, which is fine.
+    expect(index.contents).toContain('"topic": z.string()');
+    expect(index.contents).toContain('.describe("What to summarize")');
+  });
+});
+
+/**
+ * Checks that a generated index.ts is syntactically valid ES module source by
+ * handing it to a fresh `node --check`. The generated file is plain JS (no type
+ * annotations), uses ESM imports and top-level await, so `.mjs` is the right
+ * parse mode. Throws with node's syntax error if the source does not parse.
+ */
+function assertParsesAsEsModule(source: string): void {
+  const file = path.join(
+    mkdtempSync(path.join(tmpdir(), "synapse-syntax-")),
+    "index.mjs"
+  );
+  writeFileSync(file, source, "utf-8");
+  try {
+    execFileSync(process.execPath, ["--check", file], { stdio: "pipe" });
+  } finally {
+    rmSync(path.dirname(file), { recursive: true, force: true });
+  }
+}
+
+describe("generateServer prompt argument names", () => {
+  function projectWithPromptArgs(args: PromptArgument[]): SynapseProject {
+    return {
+      id: "prompt-server",
+      name: "prompt-server",
+      nodes: [
+        {
+          id: "prompt-1",
+          kind: "prompt",
+          name: "summarize",
+          description: "Summarize something",
+          arguments: args,
+          logic: { type: "code", code: 'return "Summarize: " + input["my-arg"];' },
+        },
+      ],
+      groups: [{ id: "g1", name: "default", nodeIds: ["prompt-1"] }],
+      exposedGroupIds: ["g1"],
+    };
+  }
+
+  it("emits valid syntax for argument names that are not JS identifiers", () => {
+    const files = generateServer(
+      projectWithPromptArgs([
+        { name: "my-arg", description: "A hyphenated argument", required: true },
+        { name: "2nd", description: "A digit-leading argument", required: false },
+      ])
+    );
+    const index = files.find((f) => f.path === "index.ts")!;
+
+    expect(index.contents).toContain('"my-arg": z.string()');
+    expect(index.contents).toContain('"2nd": z.string().optional()');
+    // Bare `my-arg:` / `2nd:` keys would be a hard syntax error.
+    expect(index.contents).not.toContain("my-arg: z.string()");
+    expect(index.contents).not.toContain("2nd: z.string()");
+    assertParsesAsEsModule(index.contents);
+  });
+
+  it("emits valid syntax for a prompt with no arguments", () => {
+    const files = generateServer(projectWithPromptArgs([]));
+    const index = files.find((f) => f.path === "index.ts")!;
+    expect(index.contents).toContain("argsSchema: {  },");
+    assertParsesAsEsModule(index.contents);
   });
 });

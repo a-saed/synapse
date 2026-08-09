@@ -52,10 +52,14 @@ ${node.logic.code}
 }
 
 function generatePromptRegistration(node: PromptNode): string {
+  // The key MUST be emitted as a quoted string literal. MCP prompt argument
+  // names are only constrained to be non-empty strings, so perfectly legal
+  // names like "my-arg" or "2nd" are not valid JS identifiers — emitting
+  // them bare produced a generated server that failed to parse at all.
   const argsSchemaSrc = `{ ${node.arguments
     .map(
       (a) =>
-        `${a.name}: z.string()${a.required ? "" : ".optional()"}.describe(${JSON.stringify(
+        `${JSON.stringify(a.name)}: z.string()${a.required ? "" : ".optional()"}.describe(${JSON.stringify(
           a.description
         )})`
     )
