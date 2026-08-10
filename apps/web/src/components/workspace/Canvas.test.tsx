@@ -31,19 +31,19 @@ const project: SynapseProject = {
 
 describe("Canvas", () => {
   it("renders one node card per project node", () => {
-    render(<Canvas project={project} runningNodeId={null} />);
+    render(<Canvas project={project} runningNodeId={null} onToggleGroupExposed={() => {}} />);
     expect(screen.getByText("greet")).toBeInTheDocument();
     expect(screen.getByText("readme")).toBeInTheDocument();
   });
 
   it("selects a node in the workspace store when clicked", () => {
-    render(<Canvas project={project} runningNodeId={null} />);
+    render(<Canvas project={project} runningNodeId={null} onToggleGroupExposed={() => {}} />);
     fireEvent.click(screen.getByText("greet"));
     expect(useWorkspaceStore.getState().selectedNodeId).toBe("greet");
   });
 
   it("marks the running node as pulsing", () => {
-    render(<Canvas project={project} runningNodeId="greet" />);
+    render(<Canvas project={project} runningNodeId="greet" onToggleGroupExposed={() => {}} />);
     expect(screen.getByTestId("node-greet")).toHaveAttribute("data-running", "true");
     expect(screen.getByTestId("node-readme")).toHaveAttribute("data-running", "false");
   });

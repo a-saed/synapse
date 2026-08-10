@@ -5,8 +5,8 @@ export interface NodePosition {
   y: number;
 }
 
-const COLUMN_WIDTH = 220;
-const ROW_HEIGHT = 140;
+export const COLUMN_WIDTH = 220;
+export const ROW_HEIGHT = 140;
 
 export function computeLayout(project: SynapseProject): Record<string, NodePosition> {
   const positions: Record<string, NodePosition> = {};
