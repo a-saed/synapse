@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen, fireEvent } from "@testing-library/react";
 import type { SynapseProject } from "@synapse/config-schema";
 import { Canvas } from "./Canvas";
 import { useWorkspaceStore } from "../../store/workspaceStore";
@@ -37,10 +36,9 @@ describe("Canvas", () => {
     expect(screen.getByText("readme")).toBeInTheDocument();
   });
 
-  it("selects a node in the workspace store when clicked", async () => {
-    const user = userEvent.setup();
+  it("selects a node in the workspace store when clicked", () => {
     render(<Canvas project={project} runningNodeId={null} />);
-    await user.click(screen.getByText("greet"));
+    fireEvent.click(screen.getByText("greet"));
     expect(useWorkspaceStore.getState().selectedNodeId).toBe("greet");
   });
 

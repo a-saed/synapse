@@ -34,8 +34,6 @@ export function Canvas({
         edges={[]}
         nodeTypes={nodeTypes}
         onNodeClick={(_, node) => selectNode(node.id)}
-        nodesDraggable={false}
-        panOnDrag={false}
         fitView
       >
         <Background />
