@@ -1,10 +1,9 @@
 # Synapse
 
-Synapse is a **visual builder for MCP servers**. This repository contains the
-**v1 backend engine** — there is **no UI yet**. The canvas / playground front end
-is a separate, future plan; everything here is driven over HTTP.
+Synapse is a **visual builder for MCP servers**: a backend engine plus a
+canvas-based workspace UI, driven over HTTP.
 
-The engine lets you:
+The app lets you:
 
 - **Compose a project** out of MCP primitives — `tool`, `resource` and `prompt`
   nodes, each backed by a JavaScript **Code block** — grouped into groups, with
@@ -22,15 +21,20 @@ The engine lets you:
 | `packages/config-schema`  | Zod schema + types for a `SynapseProject` (nodes, groups, exposure) |
 | `packages/codegen`        | Turns a project into the files of a standalone MCP server           |
 | `apps/server`             | Express API: project CRUD, sandboxed node execution, export routes  |
+| `apps/web`                | Vite + React workspace UI: canvas, node editor, playground, export  |
 
 ## Running it in dev
 
 ```bash
-npm install                       # from the repo root — npm workspaces
-npm run dev --workspace @synapse/server
+npm install                                # from the repo root — npm workspaces
+npm run dev --workspace @synapse/server    # terminal 1: API on :4000
+npm run dev --workspace @synapse/web       # terminal 2: UI on :5173
 ```
 
-`dev` runs `tsx watch src/index.ts`.
+`dev` runs `tsx watch src/index.ts` for the server, and `vite` for the web
+app. The web app's dev server proxies `/api/*` to `http://127.0.0.1:4000`
+(see `apps/web/vite.config.ts`), so open `http://localhost:5173` once both
+are running.
 
 Configuration is via environment variables:
 
@@ -84,12 +88,14 @@ npm test              # fast: unit + API tests, fully offline, ~2s
 npm run test:integration   # slow: real npm installs + subprocess spawns, needs network
 ```
 
-- `npm test` uses `vitest.config.ts`, which extends vitest's default excludes
-  with `**/*.integration.test.ts` so the slow tests stay out of the default loop.
-- `npm run test:integration` uses `vitest.integration.config.ts`, which runs
-  exactly those excluded files. They generate a server, `npm install` it into a
-  temp directory and drive it with a **real MCP client over stdio**, so they
-  require network access and take tens of seconds.
+- `npm test` runs the `@synapse/web` and `backend` projects defined in the
+  root `vitest.workspace.ts`, both of which exclude `**/*.integration.test.ts`
+  so the slow tests stay out of the default loop.
+- `npm run test:integration` runs the workspace's `integration` project,
+  which runs exactly those excluded files. They generate a server,
+  `npm install` it into a temp directory and drive it with a **real MCP
+  client over stdio**, so they require network access and take tens of
+  seconds.
 
 Type checking:
 
