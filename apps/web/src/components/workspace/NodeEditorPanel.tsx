@@ -48,9 +48,9 @@ export function NodeEditorPanel({
         />
       </div>
 
-      {node.kind === "tool" && <ToolFields node={node} onChange={onChange} />}
-      {node.kind === "resource" && <ResourceFields node={node} onChange={onChange} />}
-      {node.kind === "prompt" && <PromptFields node={node} onChange={onChange} />}
+      {node.kind === "tool" && <ToolFields key={node.id} node={node} onChange={onChange} />}
+      {node.kind === "resource" && <ResourceFields key={node.id} node={node} onChange={onChange} />}
+      {node.kind === "prompt" && <PromptFields key={node.id} node={node} onChange={onChange} />}
 
       <div className="space-y-1.5">
         <Label>Code</Label>
