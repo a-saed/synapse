@@ -85,6 +85,21 @@ export function WorkspacePage() {
     setAddMenu(null);
   }
 
+  function handleDeleteNode(nodeId: string) {
+    setProject((p) => {
+      if (!p) return p;
+      return {
+        ...p,
+        nodes: p.nodes.filter((n) => n.id !== nodeId),
+        groups: p.groups.map((g) => ({
+          ...g,
+          nodeIds: g.nodeIds.filter((id) => id !== nodeId),
+        })),
+      };
+    });
+    if (selectedNodeId === nodeId) selectNode(null);
+  }
+
   const commandActions: CommandAction[] = [
     { id: "playground", label: "Open playground", run: togglePlayground },
     { id: "back", label: "Back to projects", run: () => navigate("/projects") },
@@ -122,6 +137,7 @@ export function WorkspacePage() {
             runningNodeId={runningNodeId}
             onToggleGroupExposed={toggleGroupExposed}
             onAddRequest={setAddMenu}
+            onDeleteNode={handleDeleteNode}
           />
           {addMenu && (
             <AddMenu position={addMenu} onSelect={handleAdd} onClose={() => setAddMenu(null)} />

@@ -23,11 +23,13 @@ export function Canvas({
   runningNodeId,
   onToggleGroupExposed,
   onAddRequest,
+  onDeleteNode,
 }: {
   project: SynapseProject;
   runningNodeId: string | null;
   onToggleGroupExposed: (groupId: string) => void;
   onAddRequest: (position: { x: number; y: number }) => void;
+  onDeleteNode: (nodeId: string) => void;
 }) {
   const selectNode = useWorkspaceStore((s) => s.selectNode);
 
@@ -106,11 +108,17 @@ export function Canvas({
         id: node.id,
         type: "synapseNode",
         position,
-        data: { node, running: node.id === runningNodeId },
+        // Explicit width/height for the same reason groupNodes sets them
+        // above: jsdom's ResizeObserver is a no-op stub, so an unmeasured
+        // node stays `visibility: hidden`, which hides its interactive
+        // content (the delete button) from accessibility-tree queries.
+        width: 160,
+        height: 44,
+        data: { node, running: node.id === runningNodeId, onDelete: () => onDeleteNode(node.id) },
         ...(groupId && bounds ? { parentId: groupId, extent: "parent" as const } : {}),
       };
     });
-  }, [project, runningNodeId, positions, nodeIdToGroupId, groupBounds]);
+  }, [project, runningNodeId, positions, nodeIdToGroupId, groupBounds, onDeleteNode]);
 
   return (
     <div className="h-full w-full bg-background">

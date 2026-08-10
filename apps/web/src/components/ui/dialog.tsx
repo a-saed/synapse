@@ -4,6 +4,7 @@ import { cn } from "../../lib/cn";
 
 export const Dialog = DialogPrimitive.Root;
 export const DialogTrigger = DialogPrimitive.Trigger;
+export const DialogClose = DialogPrimitive.Close;
 
 export const DialogContent = forwardRef<
   HTMLDivElement,

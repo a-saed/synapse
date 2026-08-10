@@ -37,6 +37,7 @@ describe("Canvas", () => {
         runningNodeId={null}
         onToggleGroupExposed={() => {}}
         onAddRequest={() => {}}
+        onDeleteNode={() => {}}
       />
     );
     expect(screen.getByText("greet")).toBeInTheDocument();
@@ -50,6 +51,7 @@ describe("Canvas", () => {
         runningNodeId={null}
         onToggleGroupExposed={() => {}}
         onAddRequest={() => {}}
+        onDeleteNode={() => {}}
       />
     );
     fireEvent.click(screen.getByText("greet"));
@@ -63,6 +65,7 @@ describe("Canvas", () => {
         runningNodeId="greet"
         onToggleGroupExposed={() => {}}
         onAddRequest={() => {}}
+        onDeleteNode={() => {}}
       />
     );
     expect(screen.getByTestId("node-greet")).toHaveAttribute("data-running", "true");
@@ -77,6 +80,7 @@ describe("Canvas", () => {
         runningNodeId={null}
         onToggleGroupExposed={() => {}}
         onAddRequest={onAddRequest}
+        onDeleteNode={() => {}}
       />
     );
     const pane = container.querySelector(".react-flow__pane");
