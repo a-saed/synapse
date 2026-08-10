@@ -34,6 +34,7 @@ describe("Canvas node deletion", () => {
         onAddRequest={() => {}}
         onDeleteNode={onDeleteNode}
         onDeleteGroup={() => {}}
+        onPositionChange={() => {}}
       />
     );
 
@@ -56,6 +57,7 @@ describe("Canvas node deletion", () => {
         onAddRequest={() => {}}
         onDeleteNode={onDeleteNode}
         onDeleteGroup={() => {}}
+        onPositionChange={() => {}}
       />
     );
 
@@ -99,6 +101,7 @@ describe("Canvas group deletion", () => {
         onAddRequest={() => {}}
         onDeleteNode={() => {}}
         onDeleteGroup={onDeleteGroup}
+        onPositionChange={() => {}}
       />
     );
 

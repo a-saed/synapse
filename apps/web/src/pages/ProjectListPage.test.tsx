@@ -10,13 +10,13 @@ import { ProjectListPage } from "./ProjectListPage";
 const server = setupServer(
   http.get("/api/projects", () =>
     HttpResponse.json([
-      { id: "greet-server", name: "Greet Server", nodes: [], groups: [], exposedGroupIds: [] },
+      { id: "greet-server", name: "Greet Server", nodes: [], groups: [], exposedGroupIds: [], positions: {} },
     ])
   ),
   http.post("/api/projects", async ({ request }) => {
     const body = (await request.json()) as { id: string; name: string };
     return HttpResponse.json(
-      { ...body, nodes: [], groups: [], exposedGroupIds: [] },
+      { ...body, nodes: [], groups: [], exposedGroupIds: [], positions: {} },
       { status: 201 }
     );
   }),

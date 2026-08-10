@@ -40,6 +40,7 @@ describe("Canvas", () => {
         onAddRequest={() => {}}
         onDeleteNode={() => {}}
         onDeleteGroup={() => {}}
+        onPositionChange={() => {}}
       />
     );
     expect(screen.getByText("greet")).toBeInTheDocument();
@@ -55,6 +56,7 @@ describe("Canvas", () => {
         onAddRequest={() => {}}
         onDeleteNode={() => {}}
         onDeleteGroup={() => {}}
+        onPositionChange={() => {}}
       />
     );
     fireEvent.click(screen.getByText("greet"));
@@ -70,6 +72,7 @@ describe("Canvas", () => {
         onAddRequest={() => {}}
         onDeleteNode={() => {}}
         onDeleteGroup={() => {}}
+        onPositionChange={() => {}}
       />
     );
     expect(screen.getByTestId("node-greet")).toHaveAttribute("data-running", "true");
@@ -86,6 +89,7 @@ describe("Canvas", () => {
         onAddRequest={onAddRequest}
         onDeleteNode={() => {}}
         onDeleteGroup={() => {}}
+        onPositionChange={() => {}}
       />
     );
     const pane = container.querySelector(".react-flow__pane");

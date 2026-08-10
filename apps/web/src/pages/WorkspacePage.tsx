@@ -112,6 +112,13 @@ export function WorkspacePage() {
     });
   }
 
+  function handlePositionChange(nodeId: string, position: { x: number; y: number }) {
+    setProject((p) => {
+      if (!p) return p;
+      return { ...p, positions: { ...p.positions, [nodeId]: position } };
+    });
+  }
+
   function handleChangeGroup(nodeId: string, groupId: string | null) {
     setProject((p) => {
       if (!p) return p;
@@ -166,6 +173,7 @@ export function WorkspacePage() {
             onAddRequest={setAddMenu}
             onDeleteNode={handleDeleteNode}
             onDeleteGroup={handleDeleteGroup}
+            onPositionChange={handlePositionChange}
           />
           {addMenu && (
             <AddMenu position={addMenu} onSelect={handleAdd} onClose={() => setAddMenu(null)} />

@@ -29,6 +29,7 @@ const project = {
   ],
   groups: [{ id: "g1", name: "default", nodeIds: ["greet"] }],
   exposedGroupIds: ["g1"],
+  positions: {},
 };
 
 let putBody: unknown = null;

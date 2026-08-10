@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { ReactFlow, Background, Controls, MiniMap, type Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import type { SynapseProject } from "@synapse/config-schema";
-import { computeLayout, COLUMN_WIDTH, ROW_HEIGHT } from "../../lib/autoLayout";
+import { computeLayout, toAbsolutePosition, COLUMN_WIDTH, ROW_HEIGHT } from "../../lib/autoLayout";
 import { useWorkspaceStore } from "../../store/workspaceStore";
 import { NodeCard, type NodeCardData } from "./NodeCard";
 import { GroupFrame, type GroupFrameData } from "./GroupFrame";
@@ -25,6 +25,7 @@ export function Canvas({
   onAddRequest,
   onDeleteNode,
   onDeleteGroup,
+  onPositionChange,
 }: {
   project: SynapseProject;
   runningNodeId: string | null;
@@ -32,10 +33,17 @@ export function Canvas({
   onAddRequest: (position: { x: number; y: number }) => void;
   onDeleteNode: (nodeId: string) => void;
   onDeleteGroup: (groupId: string) => void;
+  onPositionChange: (nodeId: string, position: { x: number; y: number }) => void;
 }) {
   const selectNode = useWorkspaceStore((s) => s.selectNode);
 
-  const positions = useMemo(() => computeLayout(project), [project]);
+  // Nodes with a saved position ("pinned") keep it; computeLayout only
+  // fills in a starting spot for anything that's never been dragged.
+  const positions = useMemo(() => {
+    const pinnedIds = new Set(Object.keys(project.positions));
+    const fallback = computeLayout(project, pinnedIds);
+    return { ...fallback, ...project.positions };
+  }, [project]);
 
   const nodeIdToGroupId = useMemo(() => {
     const map = new Map<string, string>();
@@ -82,6 +90,10 @@ export function Canvas({
       id: group.id,
       type: "synapseGroup",
       position: { x: bounds.originX, y: bounds.originY },
+      // Group frames aren't independently draggable — their bounds are
+      // always derived from their (individually draggable) members'
+      // positions, so dragging the frame itself would just snap back.
+      draggable: false,
       // Set as top-level width/height (not just CSS style) so React Flow
       // treats the node as already measured: in jsdom, ResizeObserver is
       // a no-op stub, so nodes without explicit dimensions never leave
@@ -130,6 +142,11 @@ export function Canvas({
         edges={[]}
         nodeTypes={nodeTypes}
         onNodeClick={(_, node) => selectNode(node.id)}
+        onNodeDragStop={(_, node) => {
+          const bounds = node.parentId ? groupBounds.get(node.parentId) : undefined;
+          const origin = bounds && { x: bounds.originX, y: bounds.originY };
+          onPositionChange(node.id, toAbsolutePosition(node.position, origin));
+        }}
         onPaneContextMenu={(event) => {
           event.preventDefault();
           onAddRequest({ x: (event as MouseEvent).clientX, y: (event as MouseEvent).clientY });
