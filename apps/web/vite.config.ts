@@ -17,4 +17,7 @@ export default defineConfig({
     setupFiles: ["./vitest.setup.ts"],
     globals: true,
   },
+  optimizeDeps: {
+    include: ["monaco-editor/esm/vs/editor/editor.worker"],
+  },
 });
