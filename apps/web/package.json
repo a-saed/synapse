@@ -24,7 +24,8 @@
     "clsx": "^2.1.0",
     "tailwind-merge": "^2.5.0",
     "sonner": "^1.5.0",
-    "lucide-react": "^0.441.0"
+    "lucide-react": "^0.441.0",
+    "@xyflow/react": "^12.3.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.0",
