@@ -1,4 +1,4 @@
-import { Handle, Position, type NodeProps } from "@xyflow/react";
+import type { NodeProps } from "@xyflow/react";
 import { Wrench, FileText, MessageSquare, Trash2 } from "lucide-react";
 import type { SynapseNode } from "@synapse/config-schema";
 import { cn } from "../../lib/cn";
@@ -38,7 +38,6 @@ export function NodeCard({ data }: NodeProps & { data: NodeCardData }) {
         data.running && "animate-pulse"
       )}
     >
-      <Handle type="target" position={Position.Left} />
       <Icon className="h-4 w-4" />
       <span>{data.node.name}</span>
       <Dialog>
@@ -70,7 +69,6 @@ export function NodeCard({ data }: NodeProps & { data: NodeCardData }) {
           </div>
         </DialogContent>
       </Dialog>
-      <Handle type="source" position={Position.Right} />
     </div>
   );
 }
