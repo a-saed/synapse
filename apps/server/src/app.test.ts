@@ -40,6 +40,7 @@ describe("server", () => {
       nodes: [],
       groups: [],
       exposedGroupIds: [],
+      positions: {},
     });
   });
 
@@ -80,6 +81,7 @@ describe("server", () => {
       ],
       groups: [{ id: "g1", name: "default", nodeIds: ["tool-1"] }],
       exposedGroupIds: ["g1"],
+      positions: {},
     };
 
     const putRes = await request(app).put("/projects/proj-1").send(updated);

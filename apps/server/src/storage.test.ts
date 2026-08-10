@@ -11,6 +11,7 @@ const sampleProject: SynapseProject = {
   nodes: [],
   groups: [],
   exposedGroupIds: [],
+  positions: {},
 };
 
 describe("ProjectStorage", () => {
@@ -66,6 +67,7 @@ describe("ProjectStorage", () => {
       nodes: [],
       groups: [],
       exposedGroupIds: [],
+      positions: {},
     };
     await storage.save(validProject);
     expect(await storage.load("proj-with_valid-chars")).toEqual(validProject);

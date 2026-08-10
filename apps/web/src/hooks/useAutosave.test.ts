@@ -9,6 +9,7 @@ const project: SynapseProject = {
   nodes: [],
   groups: [],
   exposedGroupIds: [],
+  positions: {},
 };
 
 describe("useAutosave", () => {

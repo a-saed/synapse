@@ -70,6 +70,7 @@ const project: SynapseProject = {
     { id: "g1", name: "default", nodeIds: ["greet", "readme", "summarize"] },
   ],
   exposedGroupIds: ["g1"],
+  positions: {},
 };
 
 describe("exported archive end-to-end", () => {

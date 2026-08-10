@@ -12,7 +12,14 @@ import {
   useExecuteNode,
 } from "./queries";
 
-const sampleProject = { id: "proj-1", name: "P", nodes: [], groups: [], exposedGroupIds: [] };
+const sampleProject = {
+  id: "proj-1",
+  name: "P",
+  nodes: [],
+  groups: [],
+  exposedGroupIds: [],
+  positions: {},
+};
 
 const server = setupServer(
   http.get("/api/projects", () => HttpResponse.json([sampleProject])),

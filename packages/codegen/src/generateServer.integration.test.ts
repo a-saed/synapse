@@ -34,6 +34,7 @@ describe("generated server end-to-end", () => {
         ],
         groups: [{ id: "g1", name: "default", nodeIds: ["greet"] }],
         exposedGroupIds: ["g1"],
+        positions: {},
       };
 
       const files = generateServer(project);

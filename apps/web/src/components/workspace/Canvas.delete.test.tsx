@@ -19,6 +19,7 @@ const project: SynapseProject = {
   ],
   groups: [],
   exposedGroupIds: [],
+  positions: {},
 };
 
 describe("Canvas node deletion", () => {
@@ -83,6 +84,7 @@ const groupedProject: SynapseProject = {
   ],
   groups: [{ id: "g1", name: "default", nodeIds: ["greet"] }],
   exposedGroupIds: ["g1"],
+  positions: {},
 };
 
 describe("Canvas group deletion", () => {

@@ -69,11 +69,18 @@ export const synapseGroupSchema = z.object({
 });
 export type SynapseGroup = z.infer<typeof synapseGroupSchema>;
 
+export const positionSchema = z.object({ x: z.number(), y: z.number() });
+export type Position = z.infer<typeof positionSchema>;
+
 export const synapseProjectSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   nodes: z.array(synapseNodeSchema),
   groups: z.array(synapseGroupSchema),
   exposedGroupIds: z.array(z.string()),
+  // Manually dragged canvas positions, keyed by node id. A node with no
+  // entry here falls back to the client's auto-layout. `.default({})` so
+  // projects saved before this field existed still parse.
+  positions: z.record(z.string(), positionSchema).default({}),
 });
 export type SynapseProject = z.infer<typeof synapseProjectSchema>;

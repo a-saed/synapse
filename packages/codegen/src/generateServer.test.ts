@@ -33,6 +33,7 @@ const project: SynapseProject = {
   ],
   groups: [{ id: "g1", name: "default", nodeIds: ["tool-1"] }],
   exposedGroupIds: ["g1"],
+  positions: {},
 };
 
 describe("generateServer", () => {
@@ -156,6 +157,7 @@ describe("generateServer prompt argument names", () => {
       ],
       groups: [{ id: "g1", name: "default", nodeIds: ["prompt-1"] }],
       exposedGroupIds: ["g1"],
+      positions: {},
     };
   }
 

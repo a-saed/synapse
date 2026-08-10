@@ -42,4 +42,20 @@ describe("synapseProjectSchema", () => {
     };
     expect(() => synapseProjectSchema.parse(broken)).toThrow();
   });
+
+  it("defaults positions to {} for a project saved before the field existed", () => {
+    expect(synapseProjectSchema.parse(validProject).positions).toEqual({});
+  });
+
+  it("accepts a project with saved node positions", () => {
+    const withPositions = { ...validProject, positions: { "tool-1": { x: 120, y: -40 } } };
+    expect(synapseProjectSchema.parse(withPositions).positions).toEqual({
+      "tool-1": { x: 120, y: -40 },
+    });
+  });
+
+  it("rejects a malformed position entry", () => {
+    const broken = { ...validProject, positions: { "tool-1": { x: "nope", y: 0 } } };
+    expect(() => synapseProjectSchema.parse(broken)).toThrow();
+  });
 });

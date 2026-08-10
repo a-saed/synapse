@@ -9,6 +9,7 @@ function project(overrides: Partial<SynapseProject>): SynapseProject {
     nodes: [],
     groups: [],
     exposedGroupIds: [],
+    positions: {},
     ...overrides,
   };
 }

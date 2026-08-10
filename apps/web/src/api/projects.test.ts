@@ -19,6 +19,7 @@ const sampleProject = {
   nodes: [],
   groups: [],
   exposedGroupIds: [],
+  positions: {},
 };
 
 const server = setupServer(

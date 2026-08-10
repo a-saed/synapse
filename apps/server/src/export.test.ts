@@ -42,6 +42,7 @@ describe("generateClaudeConfigSnippet", () => {
       nodes: [],
       groups: [],
       exposedGroupIds: [],
+      positions: {},
     };
     const snippet = generateClaudeConfigSnippet(project, "./greet-server");
     const parsed = JSON.parse(snippet);

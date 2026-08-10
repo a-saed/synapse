@@ -18,6 +18,7 @@ const project: SynapseProject = {
   ],
   groups: [{ id: "g1", name: "default", nodeIds: ["greet"] }],
   exposedGroupIds: ["g1"],
+  positions: {},
 };
 
 describe("Canvas group frames", () => {
