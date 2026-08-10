@@ -1,3 +1,48 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --background: 240 10% 6%;
+  --foreground: 0 0% 96%;
+  --card: 240 8% 9%;
+  --card-foreground: 0 0% 96%;
+  --popover: 240 8% 9%;
+  --popover-foreground: 0 0% 96%;
+  --primary: 239 84% 67%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 5% 16%;
+  --secondary-foreground: 0 0% 96%;
+  --muted: 240 5% 16%;
+  --muted-foreground: 240 5% 65%;
+  --accent: 240 5% 18%;
+  --accent-foreground: 0 0% 96%;
+  --destructive: 0 63% 42%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 240 5% 18%;
+  --input: 240 5% 18%;
+  --ring: 239 84% 67%;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+.react-flow__controls {
+  @apply overflow-hidden rounded-md border border-border bg-card shadow-md;
+}
+.react-flow__controls-button {
+  @apply border-b border-border bg-card fill-foreground text-foreground hover:bg-accent;
+}
+.react-flow__minimap {
+  @apply overflow-hidden rounded-md border border-border;
+}
+.react-flow__attribution {
+  @apply bg-transparent text-muted-foreground;
+}
