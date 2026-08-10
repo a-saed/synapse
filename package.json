@@ -3,8 +3,8 @@
   "private": true,
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "test": "vitest run",
-    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test": "vitest run --project @synapse/web --project backend",
+    "test:integration": "vitest run --project integration",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },
   "devDependencies": {
