@@ -2,6 +2,7 @@ import type { PromptNode } from "@synapse/config-schema";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
+import { Switch } from "../ui/switch";
 
 export function PromptFields({
   node,
@@ -51,11 +52,11 @@ export function PromptFields({
             onChange={(e) => updateArgument(index, { description: e.target.value })}
             className="flex-1"
           />
-          <label className="flex items-center gap-1 text-xs">
-            <input
-              type="checkbox"
+          <label className="flex items-center gap-1.5 text-xs">
+            <Switch
+              aria-label={`${arg.name} required`}
               checked={arg.required}
-              onChange={(e) => updateArgument(index, { required: e.target.checked })}
+              onCheckedChange={(checked) => updateArgument(index, { required: checked })}
             />
             required
           </label>

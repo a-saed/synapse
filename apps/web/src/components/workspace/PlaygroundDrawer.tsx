@@ -3,6 +3,7 @@ import type { SynapseProject } from "@synapse/config-schema";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../ui/select";
 import { useExecuteNode } from "../../api/queries";
 import { useWorkspaceStore } from "../../store/workspaceStore";
 
@@ -45,23 +46,25 @@ export function PlaygroundDrawer({
     <div className="flex h-64 flex-col gap-3 border-t bg-background p-4">
       <div className="flex items-center gap-3">
         <Label htmlFor="playground-node">Node</Label>
-        <select
-          id="playground-node"
-          aria-label="node"
+        <Select
           value={nodeId}
-          onChange={(e) => {
-            setNodeId(e.target.value);
+          onValueChange={(value) => {
+            setNodeId(value);
             setFieldValues({});
             executeNode.reset();
           }}
-          className="h-9 rounded-md border border-input bg-transparent px-2 text-sm"
         >
-          {project.nodes.map((n) => (
-            <option key={n.id} value={n.id}>
-              {n.name}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger id="playground-node" aria-label="node" className="w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {project.nodes.map((n) => (
+              <SelectItem key={n.id} value={n.id}>
+                {n.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Button onClick={handleRun} disabled={executeNode.isPending}>
           Run
         </Button>

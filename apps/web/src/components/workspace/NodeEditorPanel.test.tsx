@@ -87,7 +87,7 @@ describe("NodeEditorPanel", () => {
     render(
       <NodeEditorPanel node={node} groups={groups} onChange={vi.fn()} onChangeGroup={vi.fn()} onClose={vi.fn()} />
     );
-    expect(screen.getByLabelText(/group/i)).toHaveValue("g2");
+    expect(screen.getByRole("combobox", { name: /group/i })).toHaveTextContent("Group Two");
   });
 
   it("calls onChangeGroup when a different group is selected", async () => {
@@ -102,7 +102,8 @@ describe("NodeEditorPanel", () => {
         onClose={vi.fn()}
       />
     );
-    await user.selectOptions(screen.getByLabelText(/group/i), "g1");
+    await user.click(screen.getByRole("combobox", { name: /group/i }));
+    await user.click(await screen.findByText("Group One"));
     expect(onChangeGroup).toHaveBeenCalledWith("greet", "g1");
   });
 
@@ -118,7 +119,8 @@ describe("NodeEditorPanel", () => {
         onClose={vi.fn()}
       />
     );
-    await user.selectOptions(screen.getByLabelText(/group/i), "");
+    await user.click(screen.getByRole("combobox", { name: /group/i }));
+    await user.click(await screen.findByText("Ungrouped"));
     expect(onChangeGroup).toHaveBeenCalledWith("greet", null);
   });
 });

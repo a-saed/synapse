@@ -2,6 +2,8 @@ import type { ToolNode } from "@synapse/config-schema";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
+import { Switch } from "../ui/switch";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../ui/select";
 
 const PROPERTY_TYPES = ["string", "number", "boolean", "object", "array"] as const;
 
@@ -68,26 +70,28 @@ export function ToolFields({
             onChange={(e) => renameProperty(name, e.target.value)}
             className="flex-1"
           />
-          <select
+          <Select
             value={prop.type}
-            onChange={(e) =>
-              setPropertyType(name, e.target.value as (typeof PROPERTY_TYPES)[number])
+            onValueChange={(value) =>
+              setPropertyType(name, value as (typeof PROPERTY_TYPES)[number])
             }
-            className="h-9 rounded-md border border-input bg-transparent px-2 text-sm"
           >
-            {PROPERTY_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-          <label className="flex items-center gap-1 text-xs">
-            <input
-              type="checkbox"
-              role="checkbox"
+            <SelectTrigger aria-label={`${name} type`} className="w-28 shrink-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PROPERTY_TYPES.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {t}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <label className="flex items-center gap-1.5 text-xs">
+            <Switch
               aria-label={`${name} required`}
               checked={required.includes(name)}
-              onChange={() => toggleRequired(name)}
+              onCheckedChange={() => toggleRequired(name)}
             />
             required
           </label>

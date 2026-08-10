@@ -65,7 +65,8 @@ describe("PlaygroundDrawer", () => {
     const user = userEvent.setup();
     const { onRunStart, onRunEnd } = renderDrawer();
 
-    await user.selectOptions(screen.getByLabelText(/node/i), "greet");
+    await user.click(screen.getByRole("combobox", { name: /node/i }));
+    await user.click(await screen.findByRole("option", { name: "greet" }));
     await user.type(screen.getByLabelText("name"), "Ada");
     await user.click(screen.getByRole("button", { name: /run/i }));
 

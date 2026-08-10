@@ -46,7 +46,7 @@ describe("ToolFields", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     render(<ToolFields node={node} onChange={onChange} />);
-    await user.click(screen.getByRole("checkbox", { name: /name required/i }));
+    await user.click(screen.getByRole("switch", { name: /name required/i }));
     const lastCall = onChange.mock.calls.at(-1)![0] as ToolNode;
     expect(lastCall.inputSchema.required).not.toContain("name");
   });

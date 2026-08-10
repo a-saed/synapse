@@ -3,10 +3,13 @@ import type { SynapseNode, SynapseGroup } from "@synapse/config-schema";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../ui/select";
 import { CodeEditor } from "./CodeEditor";
 import { ToolFields } from "./ToolFields";
 import { ResourceFields } from "./ResourceFields";
 import { PromptFields } from "./PromptFields";
+
+const UNGROUPED = "__ungrouped__";
 
 export function NodeEditorPanel({
   node,
@@ -23,7 +26,7 @@ export function NodeEditorPanel({
 }) {
   if (!node) return null;
 
-  const currentGroupId = groups.find((g) => g.nodeIds.includes(node.id))?.id ?? "";
+  const currentGroupId = groups.find((g) => g.nodeIds.includes(node.id))?.id ?? UNGROUPED;
 
   return (
     <div className="flex h-full w-96 flex-col gap-4 overflow-y-auto border-l bg-background p-4">
@@ -56,20 +59,22 @@ export function NodeEditorPanel({
 
       <div className="space-y-1.5">
         <Label htmlFor="node-group">Group</Label>
-        <select
-          id="node-group"
-          aria-label="Group"
+        <Select
           value={currentGroupId}
-          onChange={(e) => onChangeGroup(node.id, e.target.value || null)}
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          onValueChange={(value) => onChangeGroup(node.id, value === UNGROUPED ? null : value)}
         >
-          <option value="">Ungrouped</option>
-          {groups.map((g) => (
-            <option key={g.id} value={g.id}>
-              {g.name}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger id="node-group" aria-label="Group">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={UNGROUPED}>Ungrouped</SelectItem>
+            {groups.map((g) => (
+              <SelectItem key={g.id} value={g.id}>
+                {g.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {node.kind === "tool" && <ToolFields key={node.id} node={node} onChange={onChange} />}
