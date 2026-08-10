@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import type { SynapseNode } from "@synapse/config-schema";
+import type { SynapseNode, SynapseGroup } from "@synapse/config-schema";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
@@ -10,14 +10,20 @@ import { PromptFields } from "./PromptFields";
 
 export function NodeEditorPanel({
   node,
+  groups,
   onChange,
+  onChangeGroup,
   onClose,
 }: {
   node: SynapseNode | null;
+  groups: SynapseGroup[];
   onChange: (updated: SynapseNode) => void;
+  onChangeGroup: (nodeId: string, groupId: string | null) => void;
   onClose: () => void;
 }) {
   if (!node) return null;
+
+  const currentGroupId = groups.find((g) => g.nodeIds.includes(node.id))?.id ?? "";
 
   return (
     <div className="flex h-full w-96 flex-col gap-4 overflow-y-auto border-l bg-background p-4">
@@ -46,6 +52,24 @@ export function NodeEditorPanel({
           value={node.description}
           onChange={(e) => onChange({ ...node, description: e.target.value })}
         />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="node-group">Group</Label>
+        <select
+          id="node-group"
+          aria-label="Group"
+          value={currentGroupId}
+          onChange={(e) => onChangeGroup(node.id, e.target.value || null)}
+          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        >
+          <option value="">Ungrouped</option>
+          {groups.map((g) => (
+            <option key={g.id} value={g.id}>
+              {g.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       {node.kind === "tool" && <ToolFields key={node.id} node={node} onChange={onChange} />}

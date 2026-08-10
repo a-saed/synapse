@@ -111,6 +111,19 @@ export function WorkspacePage() {
     });
   }
 
+  function handleChangeGroup(nodeId: string, groupId: string | null) {
+    setProject((p) => {
+      if (!p) return p;
+      const groups = p.groups.map((g) => ({
+        ...g,
+        nodeIds: g.nodeIds.filter((id) => id !== nodeId),
+      }));
+      const target = groupId ? groups.find((g) => g.id === groupId) : undefined;
+      if (target) target.nodeIds.push(nodeId);
+      return { ...p, groups };
+    });
+  }
+
   const commandActions: CommandAction[] = [
     { id: "playground", label: "Open playground", run: togglePlayground },
     { id: "back", label: "Back to projects", run: () => navigate("/projects") },
@@ -157,7 +170,9 @@ export function WorkspacePage() {
         </div>
         <NodeEditorPanel
           node={selectedNode}
+          groups={project.groups}
           onChange={updateNode}
+          onChangeGroup={handleChangeGroup}
           onClose={() => selectNode(null)}
         />
       </div>
