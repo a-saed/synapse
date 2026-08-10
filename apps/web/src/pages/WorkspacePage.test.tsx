@@ -104,4 +104,36 @@ describe("WorkspacePage", () => {
 
     expect(await screen.findByDisplayValue("New Tool")).toBeInTheDocument();
   });
+
+  it("supports the full add → assign to group → render → delete loop", async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await screen.findByText("Greet Server");
+
+    // Add a group.
+    await user.click(screen.getByRole("button", { name: /add node or group/i }));
+    await user.click(await screen.findByRole("menuitem", { name: /^group$/i }));
+
+    // Add a tool node; it should auto-select and open the editor panel.
+    await user.click(screen.getByRole("button", { name: /add node or group/i }));
+    await user.click(await screen.findByRole("menuitem", { name: /^tool$/i }));
+    await screen.findByDisplayValue("New Tool");
+
+    // Assign it to the new group (option value is the group's id; its
+    // rendered label is the group's name, "New Group").
+    await user.selectOptions(screen.getByLabelText(/^group$/i), "new-group");
+    expect(await screen.findByText("New Tool")).toBeInTheDocument();
+
+    // The group frame is now visible (has a member, so it renders with
+    // bounds) — its delete button is a unique marker for its presence,
+    // since "New Group" text also appears in the Group <select>'s option.
+    expect(await screen.findByRole("button", { name: /delete new group/i })).toBeInTheDocument();
+
+    // Delete the node; the group frame (now empty) disappears.
+    fireEvent.click(screen.getByRole("button", { name: /delete new tool/i }));
+    await user.click(screen.getByRole("button", { name: /^delete$/i }));
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: /delete new group/i })).not.toBeInTheDocument()
+    );
+  });
 });
