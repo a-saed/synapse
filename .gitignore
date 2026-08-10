@@ -31,3 +31,6 @@ turbo.json.local
 # OS
 .DS_Store
 Thumbs.db
+
+# Superpowers scratch (brainstorming sessions, SDD workspaces)
+.superpowers/
