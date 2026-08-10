@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import type { SynapseProject } from "@synapse/config-schema";
 import { Canvas } from "./Canvas";
@@ -31,20 +31,57 @@ const project: SynapseProject = {
 
 describe("Canvas", () => {
   it("renders one node card per project node", () => {
-    render(<Canvas project={project} runningNodeId={null} onToggleGroupExposed={() => {}} />);
+    render(
+      <Canvas
+        project={project}
+        runningNodeId={null}
+        onToggleGroupExposed={() => {}}
+        onAddRequest={() => {}}
+      />
+    );
     expect(screen.getByText("greet")).toBeInTheDocument();
     expect(screen.getByText("readme")).toBeInTheDocument();
   });
 
   it("selects a node in the workspace store when clicked", () => {
-    render(<Canvas project={project} runningNodeId={null} onToggleGroupExposed={() => {}} />);
+    render(
+      <Canvas
+        project={project}
+        runningNodeId={null}
+        onToggleGroupExposed={() => {}}
+        onAddRequest={() => {}}
+      />
+    );
     fireEvent.click(screen.getByText("greet"));
     expect(useWorkspaceStore.getState().selectedNodeId).toBe("greet");
   });
 
   it("marks the running node as pulsing", () => {
-    render(<Canvas project={project} runningNodeId="greet" onToggleGroupExposed={() => {}} />);
+    render(
+      <Canvas
+        project={project}
+        runningNodeId="greet"
+        onToggleGroupExposed={() => {}}
+        onAddRequest={() => {}}
+      />
+    );
     expect(screen.getByTestId("node-greet")).toHaveAttribute("data-running", "true");
     expect(screen.getByTestId("node-readme")).toHaveAttribute("data-running", "false");
+  });
+
+  it("calls onAddRequest with viewport coordinates when the pane is right-clicked", () => {
+    const onAddRequest = vi.fn();
+    const { container } = render(
+      <Canvas
+        project={project}
+        runningNodeId={null}
+        onToggleGroupExposed={() => {}}
+        onAddRequest={onAddRequest}
+      />
+    );
+    const pane = container.querySelector(".react-flow__pane");
+    expect(pane).not.toBeNull();
+    fireEvent.contextMenu(pane as Element, { clientX: 123, clientY: 45 });
+    expect(onAddRequest).toHaveBeenCalledWith({ x: 123, y: 45 });
   });
 });

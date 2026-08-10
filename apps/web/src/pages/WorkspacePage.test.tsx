@@ -93,4 +93,15 @@ describe("WorkspacePage", () => {
     );
     vi.useRealTimers();
   });
+
+  it("adding a Tool via the add button creates and selects a new node", async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await screen.findByText("Greet Server");
+
+    await user.click(screen.getByRole("button", { name: /add node or group/i }));
+    await user.click(await screen.findByRole("menuitem", { name: /tool/i }));
+
+    expect(await screen.findByDisplayValue("New Tool")).toBeInTheDocument();
+  });
 });

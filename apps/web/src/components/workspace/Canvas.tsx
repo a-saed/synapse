@@ -22,10 +22,12 @@ export function Canvas({
   project,
   runningNodeId,
   onToggleGroupExposed,
+  onAddRequest,
 }: {
   project: SynapseProject;
   runningNodeId: string | null;
   onToggleGroupExposed: (groupId: string) => void;
+  onAddRequest: (position: { x: number; y: number }) => void;
 }) {
   const selectNode = useWorkspaceStore((s) => s.selectNode);
 
@@ -117,6 +119,10 @@ export function Canvas({
         edges={[]}
         nodeTypes={nodeTypes}
         onNodeClick={(_, node) => selectNode(node.id)}
+        onPaneContextMenu={(event) => {
+          event.preventDefault();
+          onAddRequest({ x: (event as MouseEvent).clientX, y: (event as MouseEvent).clientY });
+        }}
         fitView
       >
         <Background color="hsl(var(--border))" />
