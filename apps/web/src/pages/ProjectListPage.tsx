@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
+import { AppHeader } from "../components/AppHeader";
 import { NewProjectDialog } from "./NewProjectDialog";
 import { useProjects } from "../api/queries";
 
@@ -8,6 +9,14 @@ export function ProjectListPage() {
 
   return (
     <div className="mx-auto max-w-4xl p-8">
+      <header className="mb-8">
+        <AppHeader />
+        <p className="mt-2 text-sm text-muted-foreground">
+          A visual builder for MCP servers — compose tools, resources, and
+          prompts into groups, then export a ready-to-run server.
+        </p>
+      </header>
+
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Projects</h1>
         <NewProjectDialog />

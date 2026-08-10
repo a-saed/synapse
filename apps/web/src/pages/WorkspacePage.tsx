@@ -12,6 +12,7 @@ import { PlaygroundDrawer } from "../components/workspace/PlaygroundDrawer";
 import { ExportDialog } from "../components/workspace/ExportDialog";
 import { AddMenu, type AddableKind } from "../components/workspace/AddMenu";
 import { CommandPalette, type CommandAction } from "../components/CommandPalette";
+import { AppHeader } from "../components/AppHeader";
 import { Button } from "../components/ui/button";
 
 const SAVE_LABEL: Record<string, string> = {
@@ -133,6 +134,8 @@ export function WorkspacePage() {
     <div className="flex h-screen flex-col">
       <header className="flex items-center justify-between border-b px-4 py-2">
         <div className="flex items-center gap-3">
+          <AppHeader />
+          <span className="text-muted-foreground">/</span>
           <h1 className="font-semibold">{project.name}</h1>
           <span className="text-xs text-muted-foreground">
             {SAVE_LABEL[status]}
