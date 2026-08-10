@@ -19,11 +19,20 @@ const server = setupServer(
       { ...body, nodes: [], groups: [], exposedGroupIds: [] },
       { status: 201 }
     );
+  }),
+  http.delete("/api/projects/:id", ({ params }) => {
+    deletedId = params.id as string;
+    return new HttpResponse(null, { status: 204 });
   })
 );
 
+let deletedId: string | null = null;
+
 beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  deletedId = null;
+});
 afterAll(() => server.close());
 
 function renderPage() {
@@ -55,5 +64,16 @@ describe("ProjectListPage", () => {
     await waitFor(() =>
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
     );
+  });
+
+  it("deletes a project after confirming", async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await screen.findByText("Greet Server");
+
+    await user.click(screen.getByRole("button", { name: /delete greet server/i }));
+    await user.click(screen.getByRole("button", { name: /^delete$/i }));
+
+    await waitFor(() => expect(deletedId).toBe("greet-server"));
   });
 });
