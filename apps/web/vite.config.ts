@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import { configDefaults } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
@@ -16,6 +17,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
     globals: true,
+    exclude: [...configDefaults.exclude, "**/*.integration.test.ts"],
   },
   optimizeDeps: {
     include: ["monaco-editor/esm/vs/editor/editor.worker"],

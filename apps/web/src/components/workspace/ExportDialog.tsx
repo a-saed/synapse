@@ -11,9 +11,13 @@ import { getExportSnippet, exportArchiveUrl } from "../../api/projects";
 
 export function ExportDialog({ projectId }: { projectId: string }) {
   async function copySnippet() {
-    const snippet = await getExportSnippet(projectId);
-    await navigator.clipboard.writeText(JSON.stringify(snippet, null, 2));
-    toast.success("Claude Desktop config copied to clipboard");
+    try {
+      const snippet = await getExportSnippet(projectId);
+      await navigator.clipboard.writeText(JSON.stringify(snippet, null, 2));
+      toast.success("Claude Desktop config copied to clipboard");
+    } catch {
+      toast.error("Failed to copy Claude Desktop config");
+    }
   }
 
   return (

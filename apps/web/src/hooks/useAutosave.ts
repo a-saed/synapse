@@ -9,18 +9,21 @@ export function useAutosave(
   delayMs = 500
 ): { status: SaveStatus; retry: () => void } {
   const [status, setStatus] = useState<SaveStatus>("idle");
-  const lastAttempted = useRef<SynapseProject | undefined>(undefined);
+  const saveRef = useRef(save);
+  saveRef.current = save;
+  const projectRef = useRef(project);
+  projectRef.current = project;
 
-  const attemptSave = useCallback(
-    (p: SynapseProject) => {
-      lastAttempted.current = p;
-      setStatus("saving");
-      save(p)
-        .then(() => setStatus("saved"))
-        .catch(() => setStatus("error"));
-    },
-    [save]
-  );
+  // Reads `save`/`project` via refs rather than closing over them directly so
+  // this callback's identity never changes, and the debounce effect below
+  // never re-arms just because the caller passed a new inline `save` closure
+  // or because a save's own pending/success state caused a re-render.
+  const attemptSave = useCallback((p: SynapseProject) => {
+    setStatus("saving");
+    saveRef.current(p)
+      .then(() => setStatus("saved"))
+      .catch(() => setStatus("error"));
+  }, []);
 
   useEffect(() => {
     if (!project) return;
@@ -29,7 +32,7 @@ export function useAutosave(
   }, [project, delayMs, attemptSave]);
 
   const retry = useCallback(() => {
-    if (lastAttempted.current) attemptSave(lastAttempted.current);
+    if (projectRef.current) attemptSave(projectRef.current);
   }, [attemptSave]);
 
   return { status, retry };

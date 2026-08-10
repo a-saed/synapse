@@ -17,7 +17,11 @@ export function PromptFields({
   function addArgument() {
     updateArguments([
       ...node.arguments,
-      { name: `arg${node.arguments.length + 1}`, description: "", required: true },
+      {
+        name: `arg${node.arguments.length + 1}`,
+        description: "New argument",
+        required: true,
+      },
     ]);
   }
 

@@ -34,6 +34,15 @@ export function WorkspacePage() {
     if (loadedProject && !project) setProject(loadedProject);
   }, [loadedProject, project]);
 
+  // Selection/playground state lives in a module-level store, so switching to
+  // a different project must clear it — otherwise a selected node id (or an
+  // open playground) from the previous project leaks into the next one.
+  useEffect(() => {
+    setProject(undefined);
+    useWorkspaceStore.getState().selectNode(null);
+    useWorkspaceStore.getState().setPlaygroundOpen(false);
+  }, [id]);
+
   const { status, retry } = useAutosave(project, (p) => updateProject.mutateAsync(p));
 
   if (!project) {

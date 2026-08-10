@@ -52,6 +52,7 @@ export function PlaygroundDrawer({
           onChange={(e) => {
             setNodeId(e.target.value);
             setFieldValues({});
+            executeNode.reset();
           }}
           className="h-9 rounded-md border border-input bg-transparent px-2 text-sm"
         >

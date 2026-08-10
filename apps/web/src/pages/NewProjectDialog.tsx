@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogTrigger,
@@ -30,9 +31,13 @@ export function NewProjectDialog() {
 
   async function handleCreate() {
     if (!idIsValid) return;
-    await createProject.mutateAsync({ id: effectiveId, name });
-    reset();
-    setOpen(false);
+    try {
+      await createProject.mutateAsync({ id: effectiveId, name });
+      reset();
+      setOpen(false);
+    } catch {
+      toast.error("Failed to create project");
+    }
   }
 
   return (
