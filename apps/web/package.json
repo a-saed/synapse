@@ -15,7 +15,16 @@
     "react-router-dom": "^6.26.0",
     "@tanstack/react-query": "^5.56.0",
     "zustand": "^4.5.0",
-    "@synapse/config-schema": "*"
+    "@synapse/config-schema": "*",
+    "@radix-ui/react-dialog": "^1.1.0",
+    "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-switch": "^1.1.0",
+    "@radix-ui/react-slot": "^1.1.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.5.0",
+    "sonner": "^1.5.0",
+    "lucide-react": "^0.441.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.0",
