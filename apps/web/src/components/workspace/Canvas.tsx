@@ -111,7 +111,7 @@ export function Canvas({
   }, [project, runningNodeId, positions, nodeIdToGroupId, groupBounds]);
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full bg-background">
       <ReactFlow
         nodes={[...groupNodes, ...memberNodes]}
         edges={[]}
@@ -119,9 +119,9 @@ export function Canvas({
         onNodeClick={(_, node) => selectNode(node.id)}
         fitView
       >
-        <Background />
+        <Background color="hsl(var(--border))" />
         <Controls />
-        <MiniMap />
+        <MiniMap maskColor="hsl(var(--background) / 0.7)" nodeColor="hsl(var(--muted-foreground))" />
       </ReactFlow>
     </div>
   );
