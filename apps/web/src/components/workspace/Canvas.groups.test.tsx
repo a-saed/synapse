@@ -23,7 +23,7 @@ const project: SynapseProject = {
 describe("Canvas group frames", () => {
   it("renders the group name and an exposed switch reflecting exposedGroupIds", () => {
     render(
-      <Canvas project={project} runningNodeId={null} onToggleGroupExposed={vi.fn()} onAddRequest={() => {}} onDeleteNode={() => {}} />
+      <Canvas project={project} runningNodeId={null} onToggleGroupExposed={vi.fn()} onAddRequest={() => {}} onDeleteNode={() => {}} onDeleteGroup={() => {}} />
     );
     expect(screen.getByText("default")).toBeInTheDocument();
     expect(screen.getByRole("switch")).toHaveAttribute("data-state", "checked");
@@ -38,6 +38,7 @@ describe("Canvas group frames", () => {
         onToggleGroupExposed={onToggle}
         onAddRequest={() => {}}
         onDeleteNode={() => {}}
+        onDeleteGroup={() => {}}
       />
     );
     fireEvent.click(screen.getByRole("switch"));
@@ -46,7 +47,7 @@ describe("Canvas group frames", () => {
 
   it("shows the switch unchecked for a group not in exposedGroupIds", () => {
     const notExposed: SynapseProject = { ...project, exposedGroupIds: [] };
-    render(<Canvas project={notExposed} runningNodeId={null} onToggleGroupExposed={vi.fn()} onAddRequest={() => {}} onDeleteNode={() => {}} />);
+    render(<Canvas project={notExposed} runningNodeId={null} onToggleGroupExposed={vi.fn()} onAddRequest={() => {}} onDeleteNode={() => {}} onDeleteGroup={() => {}} />);
     expect(screen.getByRole("switch")).toHaveAttribute("data-state", "unchecked");
   });
 });

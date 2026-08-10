@@ -24,12 +24,14 @@ export function Canvas({
   onToggleGroupExposed,
   onAddRequest,
   onDeleteNode,
+  onDeleteGroup,
 }: {
   project: SynapseProject;
   runningNodeId: string | null;
   onToggleGroupExposed: (groupId: string) => void;
   onAddRequest: (position: { x: number; y: number }) => void;
   onDeleteNode: (nodeId: string) => void;
+  onDeleteGroup: (groupId: string) => void;
 }) {
   const selectNode = useWorkspaceStore((s) => s.selectNode);
 
@@ -91,9 +93,10 @@ export function Canvas({
         name: group.name,
         exposed: project.exposedGroupIds.includes(group.id),
         onToggleExposed: () => onToggleGroupExposed(group.id),
+        onDelete: () => onDeleteGroup(group.id),
       },
     }));
-  }, [project, groupBounds, onToggleGroupExposed]);
+  }, [project, groupBounds, onToggleGroupExposed, onDeleteGroup]);
 
   const memberNodes = useMemo<Node<NodeCardData>[]>(() => {
     return project.nodes.map((node) => {

@@ -100,6 +100,17 @@ export function WorkspacePage() {
     if (selectedNodeId === nodeId) selectNode(null);
   }
 
+  function handleDeleteGroup(groupId: string) {
+    setProject((p) => {
+      if (!p) return p;
+      return {
+        ...p,
+        groups: p.groups.filter((g) => g.id !== groupId),
+        exposedGroupIds: p.exposedGroupIds.filter((id) => id !== groupId),
+      };
+    });
+  }
+
   const commandActions: CommandAction[] = [
     { id: "playground", label: "Open playground", run: togglePlayground },
     { id: "back", label: "Back to projects", run: () => navigate("/projects") },
@@ -138,6 +149,7 @@ export function WorkspacePage() {
             onToggleGroupExposed={toggleGroupExposed}
             onAddRequest={setAddMenu}
             onDeleteNode={handleDeleteNode}
+            onDeleteGroup={handleDeleteGroup}
           />
           {addMenu && (
             <AddMenu position={addMenu} onSelect={handleAdd} onClose={() => setAddMenu(null)} />

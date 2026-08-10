@@ -32,6 +32,7 @@ describe("Canvas node deletion", () => {
         onToggleGroupExposed={() => {}}
         onAddRequest={() => {}}
         onDeleteNode={onDeleteNode}
+        onDeleteGroup={() => {}}
       />
     );
 
@@ -53,6 +54,7 @@ describe("Canvas node deletion", () => {
         onToggleGroupExposed={() => {}}
         onAddRequest={() => {}}
         onDeleteNode={onDeleteNode}
+        onDeleteGroup={() => {}}
       />
     );
 
@@ -63,5 +65,43 @@ describe("Canvas node deletion", () => {
     await user.click(screen.getByRole("button", { name: /cancel/i }));
     expect(onDeleteNode).not.toHaveBeenCalled();
     expect(screen.getByText("greet")).toBeInTheDocument();
+  });
+});
+
+const groupedProject: SynapseProject = {
+  id: "p2",
+  name: "P2",
+  nodes: [
+    {
+      id: "greet",
+      kind: "tool",
+      name: "greet",
+      description: "",
+      inputSchema: { type: "object", properties: {} },
+      logic: { type: "code", code: "" },
+    },
+  ],
+  groups: [{ id: "g1", name: "default", nodeIds: ["greet"] }],
+  exposedGroupIds: ["g1"],
+};
+
+describe("Canvas group deletion", () => {
+  it("calls onDeleteGroup with the group id after confirming delete", async () => {
+    const user = userEvent.setup();
+    const onDeleteGroup = vi.fn();
+    render(
+      <Canvas
+        project={groupedProject}
+        runningNodeId={null}
+        onToggleGroupExposed={() => {}}
+        onAddRequest={() => {}}
+        onDeleteNode={() => {}}
+        onDeleteGroup={onDeleteGroup}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /delete default/i }));
+    await user.click(screen.getByRole("button", { name: /^delete$/i }));
+    expect(onDeleteGroup).toHaveBeenCalledWith("g1");
   });
 });
