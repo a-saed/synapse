@@ -4,6 +4,9 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { CodeEditor } from "./CodeEditor";
+import { ToolFields } from "./ToolFields";
+import { ResourceFields } from "./ResourceFields";
+import { PromptFields } from "./PromptFields";
 
 export function NodeEditorPanel({
   node,
@@ -45,7 +48,9 @@ export function NodeEditorPanel({
         />
       </div>
 
-      <div data-testid="kind-fields" />
+      {node.kind === "tool" && <ToolFields node={node} onChange={onChange} />}
+      {node.kind === "resource" && <ResourceFields node={node} onChange={onChange} />}
+      {node.kind === "prompt" && <PromptFields node={node} onChange={onChange} />}
 
       <div className="space-y-1.5">
         <Label>Code</Label>
