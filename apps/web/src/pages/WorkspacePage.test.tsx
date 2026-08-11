@@ -49,8 +49,7 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
-function renderPage() {
-  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+function renderPage(client = new QueryClient({ defaultOptions: { queries: { retry: false } } })) {
   return render(
     <QueryClientProvider client={client}>
       <MemoryRouter initialEntries={["/projects/proj-1"]}>
@@ -67,6 +66,20 @@ describe("WorkspacePage", () => {
     renderPage();
     expect(await screen.findByText("Greet Server")).toBeInTheDocument();
     expect(screen.getByText("greet")).toBeInTheDocument();
+  });
+
+  it("shows the project immediately when its query cache is already warm (revisiting a project)", async () => {
+    // Simulates the SPA scenario: the user opened this project once (its
+    // query got cached), navigated back to the list, then opened it again.
+    // The same QueryClient survives across that navigation, so react-query
+    // returns cached data synchronously on this mount.
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    client.setQueryData(["projects", "proj-1"], project);
+
+    renderPage(client);
+
+    expect(await screen.findByText("Greet Server")).toBeInTheDocument();
+    expect(screen.queryByText("Loading…")).not.toBeInTheDocument();
   });
 
   it("selecting a node opens the editor panel with its code", async () => {

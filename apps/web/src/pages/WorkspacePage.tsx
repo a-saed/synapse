@@ -35,18 +35,31 @@ export function WorkspacePage() {
   const selectNode = useWorkspaceStore((s) => s.selectNode);
   const togglePlayground = useWorkspaceStore((s) => s.togglePlayground);
 
-  useEffect(() => {
-    if (loadedProject && !project) setProject(loadedProject);
-  }, [loadedProject, project]);
+  // Both effects below use functional updates (reading `current` rather than
+  // closing over `project`) so they compose instead of racing. When
+  // react-query already has this id cached (e.g. revisiting a project after
+  // going back to the list), `loadedProject` can be available synchronously
+  // on mount, and both effects fire in the same commit — with raw
+  // `setProject(x)` calls, whichever runs second wins outright, which could
+  // stomp a just-hydrated project back to `undefined` and hang on "Loading…"
+  // forever (nothing left to trigger a re-hydration).
 
   // Selection/playground state lives in a module-level store, so switching to
   // a different project must clear it — otherwise a selected node id (or an
-  // open playground) from the previous project leaks into the next one.
+  // open playground) from the previous project leaks into the next one. Only
+  // clear the local project copy if it actually belongs to a different id.
   useEffect(() => {
-    setProject(undefined);
     useWorkspaceStore.getState().selectNode(null);
     useWorkspaceStore.getState().setPlaygroundOpen(false);
+    setProject((current) => (current?.id === id ? current : undefined));
   }, [id]);
+
+  // Hydrate local state from the fetched project once it's available for
+  // the current route id.
+  useEffect(() => {
+    if (!loadedProject || loadedProject.id !== id) return;
+    setProject((current) => (current?.id === id ? current : loadedProject));
+  }, [id, loadedProject]);
 
   const { status, retry } = useAutosave(project, (p) => updateProject.mutateAsync(p));
 
