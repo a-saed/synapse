@@ -39,7 +39,7 @@ export function NodeCard({ data, dragging }: NodeProps & { data: NodeCardData })
       data-testid={`node-${data.node.id}`}
       data-running={data.running}
       className={cn(
-        "group flex items-center gap-2 rounded-md border-2 px-3 py-2 text-sm shadow-resting transition-shadow duration-150 hover:shadow-hover",
+        "group flex cursor-default items-center gap-2 rounded-md border-2 px-3 py-2 text-sm shadow-resting transition-shadow duration-150 hover:shadow-hover",
         data.running ? "animate-pulse" : "animate-scale-in",
         dragging && "shadow-drag hover:shadow-drag",
         KIND_COLOR[data.node.kind]

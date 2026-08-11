@@ -41,7 +41,7 @@ export function GroupFrame({ data }: NodeProps & { data: GroupFrameData }) {
   }
 
   return (
-    <div className="flex h-full w-full flex-col rounded-lg border border-border/60 bg-muted/10 p-2">
+    <div className="flex h-full w-full cursor-default flex-col rounded-lg border border-border/60 bg-muted/10 p-2">
       <div className="mb-2 flex items-center justify-between text-xs font-medium text-muted-foreground">
         <div className="flex items-center gap-1.5">
           <span
