@@ -52,6 +52,12 @@ describe("ProjectListPage", () => {
     expect(await screen.findByText("Greet Server")).toBeInTheDocument();
   });
 
+  it("shows a skeleton grid instead of bare loading text while projects are loading", () => {
+    renderPage();
+    expect(screen.getAllByTestId("project-skeleton").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Loading…")).not.toBeInTheDocument();
+  });
+
   it("creates a project with an auto-slugified id", async () => {
     const user = renderPage() && userEvent.setup();
     await user.click(screen.getByRole("button", { name: /new project/i }));
