@@ -1,5 +1,5 @@
 import type { NodeProps } from "@xyflow/react";
-import { Wrench, FileText, MessageSquare, Trash2 } from "lucide-react";
+import { Wrench, FileText, MessageSquare, Trash2, GripVertical } from "lucide-react";
 import type { SynapseNode } from "@synapse/config-schema";
 import { cn } from "../../lib/cn";
 import {
@@ -45,6 +45,12 @@ export function NodeCard({ data, dragging }: NodeProps & { data: NodeCardData })
         KIND_COLOR[data.node.kind]
       )}
     >
+      <span
+        className="drag-handle flex h-4 w-4 shrink-0 cursor-grab items-center justify-center text-muted-foreground active:cursor-grabbing"
+        aria-hidden="true"
+      >
+        <GripVertical className="h-3.5 w-3.5" />
+      </span>
       <span className={cn("flex h-5 w-5 items-center justify-center rounded-full", KIND_BADGE[data.node.kind])}>
         <Icon className="h-3 w-3" />
       </span>

@@ -50,4 +50,12 @@ describe("NodeCard", () => {
     expect(card.className).toContain("animate-scale-in");
     expect(card.className).not.toContain("animate-pulse");
   });
+
+  it("renders a drag handle", () => {
+    render(
+      <NodeCard {...makeProps({ node, running: false, onDelete: () => {} })} />
+    );
+    const card = screen.getByTestId(`node-${node.id}`);
+    expect(card.querySelector(".drag-handle")).not.toBeNull();
+  });
 });

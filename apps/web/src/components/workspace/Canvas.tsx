@@ -129,6 +129,7 @@ export function Canvas({
         // content (the delete button) from accessibility-tree queries.
         width: 160,
         height: 44,
+        dragHandle: ".drag-handle",
         data: { node, running: node.id === runningNodeId, onDelete: () => onDeleteNode(node.id) },
         ...(groupId && bounds ? { parentId: groupId, extent: "parent" as const } : {}),
       };
