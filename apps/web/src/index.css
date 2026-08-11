@@ -23,6 +23,9 @@
   --input: 240 5% 18%;
   --ring: 239 84% 67%;
   --radius: 0.5rem;
+  --node-tool: 217 91% 60%;
+  --node-resource: 152 69% 45%;
+  --node-prompt: 271 81% 66%;
 }
 
 @layer base {
