@@ -97,4 +97,19 @@ describe("Canvas", () => {
     fireEvent.contextMenu(pane as Element, { clientX: 123, clientY: 45 });
     expect(onAddRequest).toHaveBeenCalledWith({ x: 123, y: 45 });
   });
+
+  it("does not render the React Flow attribution badge", () => {
+    const { container } = render(
+      <Canvas
+        project={project}
+        runningNodeId={null}
+        onToggleGroupExposed={() => {}}
+        onAddRequest={() => {}}
+        onDeleteNode={() => {}}
+        onDeleteGroup={() => {}}
+        onPositionChange={() => {}}
+      />
+    );
+    expect(container.querySelector(".react-flow__attribution")).toBeNull();
+  });
 });

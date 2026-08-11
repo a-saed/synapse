@@ -1,5 +1,5 @@
 import type { NodeProps } from "@xyflow/react";
-import { Trash2 } from "lucide-react";
+import { Trash2, GripVertical } from "lucide-react";
 import { Switch } from "../ui/switch";
 import { Button } from "../ui/button";
 import {
@@ -23,7 +23,15 @@ export function GroupFrame({ data }: NodeProps & { data: GroupFrameData }) {
   return (
     <div className="flex h-full w-full flex-col rounded-lg border border-border/60 bg-muted/10 p-2">
       <div className="mb-2 flex items-center justify-between text-xs font-medium text-muted-foreground">
-        <span className="rounded-full bg-muted px-2 py-0.5">{data.name}</span>
+        <div className="flex items-center gap-1.5">
+          <span
+            className="drag-handle flex h-4 w-4 shrink-0 cursor-grab items-center justify-center active:cursor-grabbing"
+            aria-hidden="true"
+          >
+            <GripVertical className="h-3.5 w-3.5" />
+          </span>
+          <span className="rounded-full bg-muted px-2 py-0.5">{data.name}</span>
+        </div>
         <div className="flex items-center gap-2">
           <label className="flex items-center gap-1.5">
             <span>Exposed</span>

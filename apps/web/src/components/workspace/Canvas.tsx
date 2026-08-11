@@ -90,10 +90,13 @@ export function Canvas({
       id: group.id,
       type: "synapseGroup",
       position: { x: bounds.originX, y: bounds.originY },
-      // Group frames aren't independently draggable — their bounds are
-      // always derived from their (individually draggable) members'
-      // positions, so dragging the frame itself would just snap back.
-      draggable: false,
+      // Group frames are draggable via their own handle (dragHandle
+      // below); React Flow's parent/child relationship (memberNodes sets
+      // parentId/extent: "parent" when grouped) moves member cards along
+      // with the frame visually during the drag for free. Persisting that
+      // as each member's new stored position happens in onNodeDragStop.
+      draggable: true,
+      dragHandle: ".drag-handle",
       // Set as top-level width/height (not just CSS style) so React Flow
       // treats the node as already measured: in jsdom, ResizeObserver is
       // a no-op stub, so nodes without explicit dimensions never leave
@@ -142,6 +145,7 @@ export function Canvas({
         nodes={[...groupNodes, ...memberNodes]}
         edges={[]}
         nodeTypes={nodeTypes}
+        proOptions={{ hideAttribution: true }}
         onNodeClick={(_, node) => selectNode(node.id)}
         onNodeDragStop={(_, node) => {
           const bounds = node.parentId ? groupBounds.get(node.parentId) : undefined;
