@@ -2,7 +2,13 @@ import { useMemo } from "react";
 import { ReactFlow, Background, Controls, MiniMap, type Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import type { SynapseProject } from "@synapse/config-schema";
-import { computeLayout, toAbsolutePosition, COLUMN_WIDTH, ROW_HEIGHT } from "../../lib/autoLayout";
+import {
+  computeLayout,
+  toAbsolutePosition,
+  computeGroupDragPositionUpdates,
+  COLUMN_WIDTH,
+  ROW_HEIGHT,
+} from "../../lib/autoLayout";
 import { useWorkspaceStore } from "../../store/workspaceStore";
 import { NodeCard, type NodeCardData } from "./NodeCard";
 import { GroupFrame, type GroupFrameData } from "./GroupFrame";
@@ -148,6 +154,21 @@ export function Canvas({
         proOptions={{ hideAttribution: true }}
         onNodeClick={(_, node) => selectNode(node.id)}
         onNodeDragStop={(_, node) => {
+          if (node.type === "synapseGroup") {
+            const bounds = groupBounds.get(node.id);
+            const group = project.groups.find((g) => g.id === node.id);
+            if (!bounds || !group) return;
+            const updates = computeGroupDragPositionUpdates(
+              group.nodeIds,
+              positions,
+              bounds,
+              node.position
+            );
+            for (const [memberId, position] of Object.entries(updates)) {
+              onPositionChange(memberId, position);
+            }
+            return;
+          }
           const bounds = node.parentId ? groupBounds.get(node.parentId) : undefined;
           const origin = bounds && { x: bounds.originX, y: bounds.originY };
           onPositionChange(node.id, toAbsolutePosition(node.position, origin));

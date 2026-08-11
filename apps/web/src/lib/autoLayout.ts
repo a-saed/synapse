@@ -54,3 +54,27 @@ export function toAbsolutePosition(
   if (!parentOrigin) return relativePosition;
   return { x: relativePosition.x + parentOrigin.x, y: relativePosition.y + parentOrigin.y };
 }
+
+/**
+ * A group frame has no stored position of its own — its bounds are always
+ * derived from its members' positions (see `groupBounds` in Canvas.tsx).
+ * Dragging the frame is therefore expressed as "move every member by the
+ * same delta the frame moved," computed here and applied by the caller via
+ * its existing per-node position-persistence path — no new state is
+ * introduced for the group itself.
+ */
+export function computeGroupDragPositionUpdates(
+  memberIds: string[],
+  positions: Record<string, NodePosition>,
+  bounds: { originX: number; originY: number },
+  newGroupPosition: NodePosition
+): Record<string, NodePosition> {
+  const deltaX = newGroupPosition.x - bounds.originX;
+  const deltaY = newGroupPosition.y - bounds.originY;
+  const updates: Record<string, NodePosition> = {};
+  for (const memberId of memberIds) {
+    const current = positions[memberId] ?? { x: 0, y: 0 };
+    updates[memberId] = { x: current.x + deltaX, y: current.y + deltaY };
+  }
+  return updates;
+}

@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import type { SynapseProject } from "@synapse/config-schema";
-import { computeLayout, toAbsolutePosition, COLUMN_WIDTH } from "./autoLayout";
+import {
+  computeLayout,
+  toAbsolutePosition,
+  computeGroupDragPositionUpdates,
+  COLUMN_WIDTH,
+} from "./autoLayout";
 
 function project(overrides: Partial<SynapseProject>): SynapseProject {
   return {
@@ -108,5 +113,36 @@ describe("toAbsolutePosition", () => {
       x: 110,
       y: -30,
     });
+  });
+});
+
+describe("computeGroupDragPositionUpdates", () => {
+  it("shifts every member's position by the same delta the group moved", () => {
+    const positions = { a: { x: 0, y: 0 }, b: { x: 50, y: 10 } };
+    const bounds = { originX: 100, originY: 100 };
+    const newGroupPosition = { x: 140, y: 130 };
+    // Group moved +40 in x, +30 in y.
+    const updates = computeGroupDragPositionUpdates(["a", "b"], positions, bounds, newGroupPosition);
+    expect(updates).toEqual({
+      a: { x: 40, y: 30 },
+      b: { x: 90, y: 40 },
+    });
+  });
+
+  it("returns no entry for a member with no group in the id list", () => {
+    const positions = { a: { x: 0, y: 0 } };
+    const bounds = { originX: 0, originY: 0 };
+    const updates = computeGroupDragPositionUpdates(["a"], positions, bounds, { x: 10, y: 10 });
+    expect(Object.keys(updates)).toEqual(["a"]);
+  });
+
+  it("treats a member missing from the positions map as starting at the origin", () => {
+    const updates = computeGroupDragPositionUpdates(
+      ["missing"],
+      {},
+      { originX: 0, originY: 0 },
+      { x: 5, y: -5 }
+    );
+    expect(updates).toEqual({ missing: { x: 5, y: -5 } });
   });
 });
