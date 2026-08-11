@@ -136,7 +136,14 @@ export function Canvas({
   }, [project, runningNodeId, positions, nodeIdToGroupId, groupBounds, onDeleteNode]);
 
   return (
-    <div className="h-full w-full bg-background">
+    <div className="relative h-full w-full bg-background">
+      <div
+        className="pointer-events-none absolute inset-0 z-10"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, transparent 60%, hsl(var(--background)) 100%)",
+        }}
+      />
       <ReactFlow
         nodes={[...groupNodes, ...memberNodes]}
         edges={[]}
@@ -153,7 +160,8 @@ export function Canvas({
         }}
         fitView
       >
-        <Background color="hsl(var(--border))" />
+        <Background id="fine" color="hsl(var(--border))" gap={16} size={1} />
+        <Background id="coarse" color="hsl(var(--border))" gap={128} size={2} />
         <Controls />
         <MiniMap maskColor="hsl(var(--background) / 0.7)" nodeColor="hsl(var(--muted-foreground))" />
       </ReactFlow>
