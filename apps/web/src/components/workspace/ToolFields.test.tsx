@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
+import { useState } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ToolNode } from "@synapse/config-schema";
@@ -49,5 +50,20 @@ describe("ToolFields", () => {
     await user.click(screen.getByRole("switch", { name: /name required/i }));
     const lastCall = onChange.mock.calls.at(-1)![0] as ToolNode;
     expect(lastCall.inputSchema.required).not.toContain("name");
+  });
+
+  it("keeps the property-name input focused across multiple keystrokes while renaming", async () => {
+    // Mirrors how NodeEditorPanel really wires this up (onChange feeds back
+    // into a new `node` prop each keystroke) — a stubbed onChange that never
+    // re-renders ToolFields wouldn't exercise the bug this guards against.
+    function Wrapper() {
+      const [current, setCurrent] = useState(node);
+      return <ToolFields node={current} onChange={setCurrent} />;
+    }
+    const user = userEvent.setup();
+    render(<Wrapper />);
+    const input = screen.getByDisplayValue("name");
+    await user.type(input, "-new");
+    expect(screen.getByDisplayValue("name-new")).toBeInTheDocument();
   });
 });

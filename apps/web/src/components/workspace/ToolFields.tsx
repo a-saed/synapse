@@ -43,9 +43,16 @@ export function ToolFields({
 
   function renameProperty(oldName: string, newName: string) {
     if (!newName || newName === oldName || newName in properties) return;
-    const { [oldName]: prop, ...rest } = properties;
+    // Rebuilds the object key-by-key instead of `{ ...rest, [newName]: prop }`
+    // so the renamed entry keeps its original position — a spread would
+    // append it as the last key, which combined with a name-keyed list
+    // below would reorder (and remount) the row on every keystroke.
+    const nextProperties: typeof properties = {};
+    for (const [key, value] of Object.entries(properties)) {
+      nextProperties[key === oldName ? newName : key] = value;
+    }
     const nextRequired = required.map((r) => (r === oldName ? newName : r));
-    updateProperties({ ...rest, [newName]: prop }, nextRequired);
+    updateProperties(nextProperties, nextRequired);
   }
 
   function setPropertyType(name: string, type: (typeof PROPERTY_TYPES)[number]) {
@@ -63,8 +70,11 @@ export function ToolFields({
   return (
     <div className="space-y-3">
       <Label>Input properties</Label>
-      {Object.entries(properties).map(([name, prop]) => (
-        <div key={name} className="flex items-center gap-2">
+      {Object.entries(properties).map(([name, prop], index) => (
+        // Keyed by position, not by name: the name is edited in place by
+        // this very row's Input, and a name-based key would change (and
+        // remount the row, dropping focus) on every keystroke.
+        <div key={index} className="flex items-center gap-2">
           <Input
             value={name}
             onChange={(e) => renameProperty(name, e.target.value)}
