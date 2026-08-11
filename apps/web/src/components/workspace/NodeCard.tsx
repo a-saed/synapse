@@ -14,9 +14,15 @@ import { Button } from "../ui/button";
 
 const KIND_ICON = { tool: Wrench, resource: FileText, prompt: MessageSquare } as const;
 const KIND_COLOR = {
-  tool: "border-blue-500/60 bg-blue-500/10",
-  resource: "border-emerald-500/60 bg-emerald-500/10",
-  prompt: "border-purple-500/60 bg-purple-500/10",
+  tool: "border-node-tool/60 bg-node-tool/10",
+  resource: "border-node-resource/60 bg-node-resource/10",
+  prompt: "border-node-prompt/60 bg-node-prompt/10",
+} as const;
+
+const KIND_BADGE = {
+  tool: "bg-node-tool/20 text-node-tool",
+  resource: "bg-node-resource/20 text-node-resource",
+  prompt: "bg-node-prompt/20 text-node-prompt",
 } as const;
 
 export interface NodeCardData {
@@ -26,19 +32,22 @@ export interface NodeCardData {
   [key: string]: unknown;
 }
 
-export function NodeCard({ data }: NodeProps & { data: NodeCardData }) {
+export function NodeCard({ data, dragging }: NodeProps & { data: NodeCardData }) {
   const Icon = KIND_ICON[data.node.kind];
   return (
     <div
       data-testid={`node-${data.node.id}`}
       data-running={data.running}
       className={cn(
-        "group flex items-center gap-2 rounded-md border-2 px-3 py-2 text-sm shadow-sm",
+        "group flex items-center gap-2 rounded-md border-2 px-3 py-2 text-sm shadow-resting transition-shadow duration-150 animate-scale-in hover:shadow-hover",
+        dragging && "shadow-drag",
         KIND_COLOR[data.node.kind],
         data.running && "animate-pulse"
       )}
     >
-      <Icon className="h-4 w-4" />
+      <span className={cn("flex h-5 w-5 items-center justify-center rounded-full", KIND_BADGE[data.node.kind])}>
+        <Icon className="h-3 w-3" />
+      </span>
       <span>{data.node.name}</span>
       <Dialog>
         <DialogTrigger asChild>
