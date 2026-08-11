@@ -137,13 +137,6 @@ export function Canvas({
 
   return (
     <div className="relative h-full w-full bg-background">
-      <div
-        className="pointer-events-none absolute inset-0 z-10"
-        style={{
-          background:
-            "radial-gradient(ellipse at center, transparent 60%, hsl(var(--background)) 100%)",
-        }}
-      />
       <ReactFlow
         nodes={[...groupNodes, ...memberNodes]}
         edges={[]}
@@ -164,6 +157,13 @@ export function Canvas({
         <Background id="coarse" color="hsl(var(--border))" gap={128} size={2} />
         <Controls />
         <MiniMap maskColor="hsl(var(--background) / 0.7)" nodeColor="hsl(var(--muted-foreground))" />
+        <div
+          className="pointer-events-none absolute inset-0 z-[4]"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, transparent 75%, hsl(var(--background)) 100%)",
+          }}
+        />
       </ReactFlow>
     </div>
   );

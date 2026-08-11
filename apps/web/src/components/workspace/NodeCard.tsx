@@ -39,10 +39,10 @@ export function NodeCard({ data, dragging }: NodeProps & { data: NodeCardData })
       data-testid={`node-${data.node.id}`}
       data-running={data.running}
       className={cn(
-        "group flex items-center gap-2 rounded-md border-2 px-3 py-2 text-sm shadow-resting transition-shadow duration-150 animate-scale-in hover:shadow-hover",
-        dragging && "shadow-drag",
-        KIND_COLOR[data.node.kind],
-        data.running && "animate-pulse"
+        "group flex items-center gap-2 rounded-md border-2 px-3 py-2 text-sm shadow-resting transition-shadow duration-150 hover:shadow-hover",
+        data.running ? "animate-pulse" : "animate-scale-in",
+        dragging && "shadow-drag hover:shadow-drag",
+        KIND_COLOR[data.node.kind]
       )}
     >
       <span className={cn("flex h-5 w-5 items-center justify-center rounded-full", KIND_BADGE[data.node.kind])}>
