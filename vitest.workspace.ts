@@ -22,19 +22,32 @@ import { configDefaults, defineWorkspace } from "vitest/config";
 // - "integration": exactly the `*.integration.test.ts` files (real npm
 //   installs into temp dirs, spawned subprocesses) — run separately via
 //   `npm run test:integration`, never part of the default fast loop.
+//
+// Every project also excludes `**/.claude/**`: Claude Code worktrees live at
+// `.claude/worktrees/<name>/` inside this repo (gitignored, but not excluded
+// from vitest's own file-glob scanning by default). Without this, running
+// `npm test` from the repo root while a worktree exists double-counts every
+// backend/integration test file — once at its real path, once nested inside
+// the worktree copy — and the duplicate runs race on shared fixture state
+// (e.g. apps/server's on-disk project storage), producing spurious failures.
 export default defineWorkspace([
   "./apps/web",
   {
     test: {
       name: "backend",
-      exclude: [...configDefaults.exclude, "**/*.integration.test.ts", "apps/web/**"],
+      exclude: [
+        ...configDefaults.exclude,
+        "**/*.integration.test.ts",
+        "apps/web/**",
+        "**/.claude/**",
+      ],
     },
   },
   {
     test: {
       name: "integration",
       include: ["**/*.integration.test.ts"],
-      exclude: [...configDefaults.exclude],
+      exclude: [...configDefaults.exclude, "**/.claude/**"],
     },
   },
 ]);

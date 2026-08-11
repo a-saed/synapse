@@ -7,6 +7,6 @@ export default defineConfig({
     // they are excluded here and run separately via `npm run test:integration`.
     // Note the spread: dropping vitest's own defaults would start scanning
     // node_modules, dist, etc.
-    exclude: [...configDefaults.exclude, "**/*.integration.test.ts"],
+    exclude: [...configDefaults.exclude, "**/*.integration.test.ts", "**/.claude/**"],
   },
 });

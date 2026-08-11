@@ -17,7 +17,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
     globals: true,
-    exclude: [...configDefaults.exclude, "**/*.integration.test.ts"],
+    exclude: [...configDefaults.exclude, "**/*.integration.test.ts", "**/.claude/**"],
   },
   optimizeDeps: {
     include: ["monaco-editor/esm/vs/editor/editor.worker"],
