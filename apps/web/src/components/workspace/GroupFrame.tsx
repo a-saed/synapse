@@ -21,9 +21,9 @@ export interface GroupFrameData {
 
 export function GroupFrame({ data }: NodeProps & { data: GroupFrameData }) {
   return (
-    <div className="flex h-full w-full flex-col rounded-lg border-2 border-dashed border-muted-foreground/40 p-2">
+    <div className="flex h-full w-full flex-col rounded-lg border border-border/60 bg-muted/10 p-2">
       <div className="mb-2 flex items-center justify-between text-xs font-medium text-muted-foreground">
-        <span>{data.name}</span>
+        <span className="rounded-full bg-muted px-2 py-0.5">{data.name}</span>
         <div className="flex items-center gap-2">
           <label className="flex items-center gap-1.5">
             <span>Exposed</span>
