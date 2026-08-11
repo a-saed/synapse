@@ -23,7 +23,7 @@ export function ProjectListPage() {
 
   return (
     <div className="mx-auto max-w-4xl p-8">
-      <header className="mb-8">
+      <header className="sticky top-0 z-20 -mx-8 mb-8 border-b bg-background/80 px-8 py-4 backdrop-blur">
         <AppHeader />
         <p className="mt-2 text-sm text-muted-foreground">
           A visual builder for MCP servers — compose tools, resources, and
