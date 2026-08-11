@@ -13,7 +13,9 @@ import { useWorkspaceStore } from "../../store/workspaceStore";
 import { NodeCard, type NodeCardData } from "./NodeCard";
 import { GroupFrame, type GroupFrameData } from "./GroupFrame";
 
-const nodeTypes = { synapseNode: NodeCard, synapseGroup: GroupFrame };
+const GROUP_NODE_TYPE = "synapseGroup";
+
+const nodeTypes = { synapseNode: NodeCard, [GROUP_NODE_TYPE]: GroupFrame };
 
 const GROUP_PADDING = 40;
 
@@ -22,6 +24,38 @@ interface GroupBounds {
   originY: number;
   width: number;
   height: number;
+}
+
+/**
+ * Handles the `onNodeDragStop` case where the dragged node is a group frame:
+ * looks up the frame's bounds and member list, computes each member's new
+ * absolute position via `computeGroupDragPositionUpdates`, and persists
+ * them one at a time through `onPositionChange`. Pulled out of the
+ * `onNodeDragStop` closure so this wiring — the lookups and the loop, not
+ * just the pure math in `computeGroupDragPositionUpdates` — is unit
+ * testable without rendering a full `<Canvas>`/React Flow tree.
+ */
+export function handleGroupDragStop(
+  project: SynapseProject,
+  positions: Record<string, { x: number; y: number }>,
+  groupBounds: Map<string, GroupBounds>,
+  groupId: string,
+  newGroupPosition: { x: number; y: number },
+  onPositionChange: (nodeId: string, position: { x: number; y: number }) => void
+): void {
+  const bounds = groupBounds.get(groupId);
+  const group = project.groups.find((g) => g.id === groupId);
+  if (!bounds || !group) return;
+  // Only ids that already resolve to a real position are passed through —
+  // an id in group.nodeIds with no matching project.nodes/positions entry
+  // (shouldn't normally happen, but isn't guaranteed impossible) would
+  // otherwise fall back to {x:0,y:0} inside the helper and get a bogus
+  // position persisted for a nonexistent node.
+  const memberIds = group.nodeIds.filter((id) => id in positions);
+  const updates = computeGroupDragPositionUpdates(memberIds, positions, bounds, newGroupPosition);
+  for (const [memberId, position] of Object.entries(updates)) {
+    onPositionChange(memberId, position);
+  }
 }
 
 export function Canvas({
@@ -96,13 +130,16 @@ export function Canvas({
 
     return groupsWithBounds.map(({ group, bounds }) => ({
       id: group.id,
-      type: "synapseGroup",
+      type: GROUP_NODE_TYPE,
       position: { x: bounds.originX, y: bounds.originY },
       // Group frames are draggable via their own handle (dragHandle
-      // below); React Flow's parent/child relationship (memberNodes sets
-      // parentId/extent: "parent" when grouped) moves member cards along
-      // with the frame visually during the drag for free. Persisting that
-      // as each member's new stored position happens in onNodeDragStop.
+      // below). Member cards use React Flow's parent/child relationship
+      // (memberNodes sets parentId/extent: "parent" when grouped), which
+      // is what keeps their rendered position correct relative to the
+      // frame. Whichever way that renders during the gesture itself,
+      // onNodeDragStop below is what persists the final result: it
+      // computes each member's new absolute position from the delta the
+      // frame moved and writes it back via onPositionChange.
       draggable: true,
       dragHandle: ".drag-handle",
       // Set as top-level width/height (not just CSS style) so React Flow
@@ -157,19 +194,8 @@ export function Canvas({
         proOptions={{ hideAttribution: true }}
         onNodeClick={(_, node) => selectNode(node.id)}
         onNodeDragStop={(_, node) => {
-          if (node.type === "synapseGroup") {
-            const bounds = groupBounds.get(node.id);
-            const group = project.groups.find((g) => g.id === node.id);
-            if (!bounds || !group) return;
-            const updates = computeGroupDragPositionUpdates(
-              group.nodeIds,
-              positions,
-              bounds,
-              node.position
-            );
-            for (const [memberId, position] of Object.entries(updates)) {
-              onPositionChange(memberId, position);
-            }
+          if (node.type === GROUP_NODE_TYPE) {
+            handleGroupDragStop(project, positions, groupBounds, node.id, node.position, onPositionChange);
             return;
           }
           const bounds = node.parentId ? groupBounds.get(node.parentId) : undefined;
