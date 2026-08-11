@@ -43,7 +43,7 @@ export function PlaygroundDrawer({
   }
 
   return (
-    <div className="flex h-64 flex-col gap-3 border-t bg-background p-4">
+    <div className="flex h-64 flex-col gap-3 border-t bg-background p-4 animate-slide-in-up">
       <div className="flex items-center gap-3">
         <Label htmlFor="playground-node">Node</Label>
         <Select

@@ -29,7 +29,7 @@ export function NodeEditorPanel({
   const currentGroupId = groups.find((g) => g.nodeIds.includes(node.id))?.id ?? UNGROUPED;
 
   return (
-    <div className="flex h-full w-96 flex-col gap-4 overflow-y-auto border-l bg-background p-4">
+    <div className="flex h-full w-96 flex-col gap-4 overflow-y-auto border-l bg-background p-4 animate-slide-in-right">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold uppercase text-muted-foreground">
           {node.kind}
