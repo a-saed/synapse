@@ -145,6 +145,16 @@ export function WorkspacePage() {
     });
   }
 
+  function handleRenameGroup(groupId: string, name: string) {
+    setProject((p) => {
+      if (!p) return p;
+      return {
+        ...p,
+        groups: p.groups.map((g) => (g.id === groupId ? { ...g, name } : g)),
+      };
+    });
+  }
+
   const commandActions: CommandAction[] = [
     { id: "playground", label: "Open playground", run: togglePlayground },
     { id: "back", label: "Back to projects", run: () => navigate("/projects") },
@@ -187,6 +197,7 @@ export function WorkspacePage() {
             onDeleteNode={handleDeleteNode}
             onDeleteGroup={handleDeleteGroup}
             onPositionChange={handlePositionChange}
+            onRenameGroup={handleRenameGroup}
           />
           {addMenu && (
             <AddMenu position={addMenu} onSelect={handleAdd} onClose={() => setAddMenu(null)} />
