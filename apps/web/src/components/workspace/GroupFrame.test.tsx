@@ -85,4 +85,16 @@ describe("GroupFrame", () => {
     fireEvent.blur(screen.getByDisplayValue("My Group"));
     expect(onRename).not.toHaveBeenCalled();
   });
+
+  it("does not commit when the name is typed over and cleared to empty, and reverts the displayed name", async () => {
+    const user = userEvent.setup();
+    const onRename = vi.fn();
+    render(<GroupFrame {...makeProps(makeData({ onRename }))} />);
+    await user.click(screen.getByRole("button", { name: "My Group" }));
+    const input = screen.getByDisplayValue("My Group");
+    await user.clear(input);
+    fireEvent.blur(input);
+    expect(onRename).not.toHaveBeenCalled();
+    expect(screen.getByText("My Group")).toBeInTheDocument();
+  });
 });
