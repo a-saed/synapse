@@ -14,6 +14,79 @@ The app lets you:
   (a zip containing a runnable `index.ts`, `package.json` and `README.md`) or as
   a **paste-ready Claude Desktop config snippet** pointing at that server.
 
+- [Quick start: build your first MCP server](#quick-start-build-your-first-mcp-server)
+  - [Writing Code blocks](#writing-code-blocks)
+- [Layout](#layout)
+- [Running it in dev](#running-it-in-dev)
+- [Security](#security)
+- [Testing](#testing)
+- [Known limitation: no production build](#known-limitation-no-production-build)
+
+## Quick start: build your first MCP server
+
+This walks through the whole loop — the payoff is a real tool an AI client
+can call, not just a demo project sitting in the UI.
+
+1. **Start both processes** (see [Running it in dev](#running-it-in-dev)
+   below), then open `http://localhost:5173`.
+2. **Create a project** from the project list, then open it — you land on the
+   canvas.
+3. **Add a Tool node** (`+` button, top-left). Give it a name, e.g.
+   `current_time`. In its Code box:
+   ```js
+   return new Date().toISOString();
+   ```
+   A node's code always ends by `return`ing a **string** — see
+   [Writing Code blocks](#writing-code-blocks) for the full constraints.
+4. **Add a Group**, drag the tool into it (or assign it via the node editor's
+   Group dropdown), and toggle the group's **Exposed** switch — only exposed
+   groups ship in the export.
+5. **Test it before exporting.** Open the command palette (`Cmd/Ctrl+K`) →
+   "Open playground", pick the node, hit Run, and confirm you get a real
+   result back — this executes the same sandboxed code path a real MCP call
+   would use.
+6. **Export it.** Click **Export** → **Download standalone server (.zip)**.
+   Unzip it: you get `index.ts`, `package.json`, `README.md` — a complete
+   project with zero runtime dependency on Synapse. Also click **Copy Claude
+   Desktop config** to get the exact JSON block for the next step.
+7. **Run the generated server standalone** to confirm it's real, working
+   code:
+   ```bash
+   cd <unzipped-folder>
+   npm install
+   npx tsx index.ts
+   ```
+   It will sit idle with no output — that's correct. It speaks MCP over
+   stdio and is waiting for a client, not serving HTTP.
+8. **Wire it into an actual AI client.** Paste the copied snippet into
+   `claude_desktop_config.json` (or Claude Code's MCP config), adjusting the
+   path to your unzipped `index.ts`, then restart the client. Ask it
+   something like *"what's the current time?"* — it should call your tool
+   and answer with the real value the tool returned.
+
+### Writing Code blocks
+
+Every node's logic is a Code block: JavaScript that reads a parsed `input`
+object and **must `return` a string** (for tools/resources, wrap structured
+data with `JSON.stringify(...)`; for prompts, return the assembled prompt
+text). `async`/`await` work. **`fetch` and `console` are deliberately not
+available** — see [Security](#security) for why. This means Code blocks are
+for computation, formatting, and validation, not for calling external APIs
+or writing to disk.
+
+A slightly more advanced example — a Tool with two typed input properties
+(add both via the node editor's "Input properties" list: `text` as a
+required string, `include_reading_time` as an optional boolean):
+
+```js
+const words = input.text.trim().split(/\s+/).filter(Boolean);
+const stats = { words: words.length, characters: input.text.length };
+if (input.include_reading_time) {
+  stats.readingTimeMinutes = Math.ceil(words.length / 200);
+}
+return JSON.stringify(stats);
+```
+
 ## Layout
 
 | Path                      | What it is                                                        |
