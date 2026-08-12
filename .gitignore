@@ -37,3 +37,6 @@ Thumbs.db
 
 # Claude Code worktrees
 .claude/worktrees/
+
+# Runtime project storage (apps/server/src/index.ts defaults to ./data)
+apps/server/data/
