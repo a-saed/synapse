@@ -74,18 +74,9 @@ available** — see [Security](#security) for why. This means Code blocks are
 for computation, formatting, and validation, not for calling external APIs
 or writing to disk.
 
-A slightly more advanced example — a Tool with two typed input properties
-(add both via the node editor's "Input properties" list: `text` as a
-required string, `include_reading_time` as an optional boolean):
-
-```js
-const words = input.text.trim().split(/\s+/).filter(Boolean);
-const stats = { words: words.length, characters: input.text.length };
-if (input.include_reading_time) {
-  stats.readingTimeMinutes = Math.ceil(words.length / 200);
-}
-return JSON.stringify(stats);
-```
+See **[docs/examples.md](docs/examples.md)** for worked, verified example
+projects — including one exercising typed input properties and all three
+MCP primitives together.
 
 ## Layout
 
